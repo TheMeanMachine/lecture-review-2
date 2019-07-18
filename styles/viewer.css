@@ -1,0 +1,101 @@
+.formOuter{
+    height: auto;
+    width: calc(100%-10px);
+    max-width: 400px;
+    margin: 10px auto;
+    
+    
+}
+.backgroundViewer{
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    z-index: -1;
+    background: whitesmoke;
+    
+    
+}
+
+
+
+#tb_viewer{
+    background: white;
+    box-shadow: 0;
+}
+
+.formInner{
+    
+}
+
+::-webkit-scrollbar {
+    width: 0px;  /* Remove scrollbar space */
+    background: transparent;  /* Optional: just make scrollbar invisible */
+}
+
+.formField{
+    height: auto;
+    margin: 10px 0px;
+
+}
+
+.ff_upperBand{
+    height: 15px;
+    padding: 5px;
+    line-height: 15px;
+    font-size: 1em;
+    color: #7F838C;
+}
+
+.ff_lowerBand{
+    padding: 5px;
+}
+
+.ff_lbInput{
+    outline-width: 0;
+    width: 100%;
+    height: auto;
+    min-height: 25px;
+    background: transparent;
+    border: 1px solid #7F838C;
+}
+
+.ff_lbInput:focus{
+    
+    border: 1px solid #4384F4 ;
+}
+
+.fiTitle{
+    text-align: center;
+    color: black;
+}
+
+.ff_TextNotes{
+    height: 100px;
+    width: 100%;
+    resize: none;
+    border: #7F838C solid 1px;
+}
+
+
+.ff_TextNotes:focus{
+    outline: 0;
+    border: 1px solid #4384F4 ;
+}
+
+.ccTitleUnderline{
+    text-align: center;
+    color: #7F838C;
+    margin: 5px 50px auto;
+    
+    border-bottom: 1px #7F838C solid;
+}
+
+.tb_Submit{
+    border: 0;
+    background: transparent;
+    outline: 0;
+}
+
+.viewerCard{
+
+}

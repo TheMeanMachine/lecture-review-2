@@ -1,0 +1,103 @@
+
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="./styles/menu.css">
+        <link rel="stylesheet" type="text/css" href="./styles/card.css">
+        <link rel="stylesheet" type="text/css" href="./styles/viewerFrame.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
+    </head>
+    <body>
+        <div class="background"></div>
+        <div class="page">
+
+            <div class="topbar">
+                <div class="tb_outer">
+                    <!--<div class="tb_lButton">
+                        <div class="tb_llogo">
+                            
+                        </div>
+                    </div>
+                    
+                    <div class="tb_mText">
+                        <div class="tb_mTextInner">
+                            <div class="tb_mTextUp">
+                                Year 3
+                            </div>
+                            <div class="tb_mTextDown">
+                                Semester 2
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tb_sText">
+                        <div class="tb_sTextInner">
+                            <div class="tb_sTextUp">
+                                
+                            </div>
+                            <div class="tb_sTextDown">
+                                
+                            </div>
+                        </div>
+                        
+                    </div>-->
+                    <div class="pageNavbar">
+                        <div class="pageNavbarInner">
+                            <div class="pageNBactionOuter">
+                                <div class="pageNBactionInner " >
+                                    <select id="years" class="page_Select" name="years" onchange="updateModules(); setPersistence('year', this.value);">
+                                        <option value="1">Year 1</option>
+                                        <option value="2">Year 2</option>
+                                        <option value="3">Year 3</option>
+                                    </select>
+                                    
+                                    <select id="semester" class="page_Select" name="semester" onchange="updateModules(); setPersistence('semester', this.value);">
+                                        <option value="1">Semester 1</option>
+                                        <option value="2">Semester 2</option>
+                                    </select>
+                                    
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+              <div class="pageNavbar">
+                        <div class="pageNavbarInner">
+                            <div class="pageNBactionOuter">
+                                <div class="pageNBactionInner ">
+                                    <div class="pageNBactionbut" >
+                                        <i class="material-icons" id="centretext" style=""  onclick="randomInspiration();">
+                                            tag_faces
+                                        </i>
+                                    </div>
+                                    <div class="pageNBactionbut" onclick="">
+                                        <i class="material-icons" id="centretext" style="" >
+                                            add
+                                        </i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            <div class="pageContents" id="pc">
+            </div>
+
+        </div>
+        
+    </body>
+
+     <link rel="stylesheet" type="text/css" href="styles/confirm.css">
+    <script src="scripts/confirm.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles/toast.css">
+    <script src="scripts/toast.js"></script>
+    <script src="scripts/card.js"></script>
+
+    
+    
+    
+</html>

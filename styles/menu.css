@@ -1,0 +1,184 @@
+body{
+    margin: 0;
+    border: 0;
+    padding: 0;
+    background: transparent;
+}
+
+*{
+    font-family: sans-serif;
+    
+}
+
+.background{
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    z-index: -1;
+    background: whitesmoke;
+}
+
+.page{
+    
+}
+
+.pageContents{
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.topbar{
+    width: 100%;
+    height: 60px;
+    
+    
+    
+}
+
+.tb_outer{
+    height: inherit;
+    background: white;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    position: fixed;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.tb_lButton{
+    height: px;
+    width: 60px;
+    float: left;
+    
+    background: green;
+}
+
+.tb_mText{
+    height: 100%;
+    max-width: 200px;
+    min-width: 0px;
+    margin: 0 auto;
+
+}
+
+.tb_mTextInner{
+    height: calc( 100% - 14px) ;
+    width: auto;
+    float: right;
+    margin: 7px;
+    display: flex;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    
+}
+
+.tb_mTextUp{
+    height: 100%;
+    line-height: 40px;
+    padding-left: -50px;
+    text-align: center;
+    margin: 0 auto;
+    margin-right: 10px;
+}
+
+.tb_mTextDown{
+    height: 100%;
+    line-height: 40px;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.tb_sText{
+    height: 100%;
+    width: auto;
+    max-width: 200px;
+    min-width: 0px;
+    float: right;
+
+}
+
+.tb_sTextInner{
+    height: calc( 100% - 14px) ;
+    width: auto;
+    float: right;
+    margin: 7px;
+
+    text-overflow: ellipsis;
+    word-break: break-all;
+    
+}
+
+.tb_sTextUp{
+    height: 50%;
+    
+    text-align: right;
+}
+
+.tb_sTextDown{
+    height: 50%;
+
+    text-align: right;
+}
+
+
+.pageNavbar{
+    height: 40px;
+    width: 100%;
+    margin-bottom: 20px;
+    
+    
+}
+
+.pageNavbarInner{
+    height: 100%;
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+
+}
+
+.pageNBactionOuter{
+    height: 100%;
+    width: 100%;
+    
+}
+
+.pageNBactionInner{
+    height: 100%;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    
+}
+
+.pageNBactionbut{
+    height: 40px;
+    width: 40px;
+    margin: 10 auto;
+    border-radius: 100%;
+
+    color: #7F838C;
+    text-align: center;
+
+    user-select: none;
+    
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+
+.pageNBactionbut:hover {
+    color: 4384F4;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+#centretext{
+    line-height: 40px;
+}
+
+.page_Select{
+    height: 60px;
+    width: auto;
+    border: 0px;
+    background: transparent;
+    text-align: center;
+    margin: 0 auto;
+}
