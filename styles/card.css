@@ -27,11 +27,11 @@
 
 .cContents{
     height: auto;
-    min-height: 50px;
+    overflow: hidden;
     width: 100%;
     background-color: white;
-
-
+    max-height: 0px;
+    transition: all ease-in-out 1s;
 }
 
 .ch_lText{
