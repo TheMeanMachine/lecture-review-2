@@ -24,7 +24,6 @@ class myApp{
         };
         
         this.makeModuleList();
-         
         
     }
     
@@ -50,6 +49,8 @@ class myApp{
 
                         var year = myArr[i]['year'];
                         var sem = myArr[i]['semester'];
+                        
+                        var color = 1;
 
                         var newMod = new module(id,
                                                title,
@@ -60,7 +61,8 @@ class myApp{
                                                leader,
                                                credits,
                                                examPer,
-                                               cwPer);
+                                               cwPer,
+                                               color);
 
                         
                         
@@ -87,27 +89,35 @@ class myApp{
 
 class card{
     constructor(){
-        
-    }
-    toggleExpand(){
-
-        if(this.expanded == 1){
-            this.expanded = 2;
-        }else{
-            this.expanded = 1;
-        }
-
-        this.display();
+        this.colors = ["#ffffff","#a5d4ff"];
     }
     
     toggleContents(){
-
+        var maxHeight = 0;
         var contents = this.elements["contents"];
-        if(this.expanded == 1){
-            contents.style.maxHeight = "0px";
+        
+        if(this.expanded == 1){//Closing
+            this.expanded = 0;
+
         }else{
-            contents.style.maxHeight = "10000px";
+            this.expanded = 1;
+            if(this.lectures){
+                //Is a module
+                maxHeight = this.calculateMaxHeight();
+
+            }else{
+                //Is a lecture
+                maxHeight = 150;
+                //Expand the parent module to account for the expanded lecture
+                var parentModuleContents = this.parentModule.elements["contents"];
+                parentModuleContents.style.maxHeight = this.parentModule.calculateMaxHeight();
+            }
+            
+            
+            
         }
+        contents.style.maxHeight = maxHeight + "px"; 
+        this.display();
     }
     
     findElementByName(e, target){
@@ -136,7 +146,7 @@ class card{
 
 
 class module extends card{
-    constructor(modID,title,code,semester,year,desc,leader,credits,examPer,cwPer){
+    constructor(modID,title,code,semester,year,desc,leader,credits,examPer,cwPer, color){
         super();
         //details
         this.modID = modID;
@@ -149,18 +159,40 @@ class module extends card{
         this.credits = credits;
         this.examPer = examPer;
         this.cwPer = cwPer;
-        
+        this.chosenColor = color;
         
         this.lectures = [];
-        
+
+
+        this.expanded = 0;
         //elements
-        this.noLecture;
+        this.elements = {};
         
         //function calls
         this.drawElements();
-       // this.display();
+        this.display();
         this.makeLectureList();
-       
+
+        this.elements["expand"].addEventListener("click",this.toggleContents.bind(this));
+    }
+    
+    calculateMaxHeight(){
+        var maxHeight = 150;
+        var amtOpenLectures = 0;
+        var amtClosedLectures = 0;
+        //Work out size needed to accomodate for the lectures expanded and closed
+        if(this.lectures.length > 0){
+            for(var i = 0; i < this.lectures.length; i++){
+                (this.lectures[i].expanded == 0) ? amtClosedLectures += 1 : amtOpenLectures += 1;
+
+            }
+        
+            maxHeight = (amtClosedLectures * 160) + (amtOpenLectures * 300);
+        }
+        
+        
+        return maxHeight;
+
     }
     
     //Finds all the lectures associated with this module and add them to the lecture list
@@ -199,7 +231,7 @@ class module extends card{
                                                              t))
                         : console.log("already exists");
                         
-
+                        this.lectLen += 1;
                     }
                 }else{//Data doesn't exist
 
@@ -214,20 +246,130 @@ class module extends card{
     
        
     drawElements(){
-         var nolecture = document.getElementById("nolectures" + module)
+         var cardTemplate = document.createElement('div');
+        cardTemplate.setAttribute('class', 'card');
+
+        cardTemplate.innerHTML = `
+              <div class="cHandle">
+                <div class="cHandleOuter">
+                    <div class="cHandleInner">
+                        <div class="ch_lCheck">
+                            <div class="ch_lCheckbox" name="info">
+                                <i class="material-icons" style="user-select: none;">
+                                    info
+                                </i>
+                            </div>
+                        </div>
+                        <div class="ch_lText">
+                            <div class="ch_lTextInner">
+
+                            </div>
+                            <div class="ch_mTextInner" name="title">
+                            </div>
+
+                        </div>
+                        <div class="ch_rExpand" >
+                            <div class="ch_rExpandInner">
+                                <div class="ch_rExpandInnerText" name="expand">
+                                    <i class="material-icons" style="" >
+                                        add
+                                    </i>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>  
+                </div>
+
+            </div>
+            <div class="cContents" id="module" name="contents">
+
+                <!--For specific uses-->
+                <div class="ccNavbar">
+                    <div class="ccNavbarInner">
+                        <div class="ccNBbookmarkOuter">
+                            <div class="ccNBbookmarkInner" style="display: none">
+                                Slide
+                                <input class="ccNBbookmark" type="number" name="" value="0" onblur="updateLectureInfo(this);" min="0" max="150">
+                            </div>
+                        </div>
+                        <div class="ccNBactionOuter">
+                            <div class="ccNBactionInner">
+                                <div class="ccNBactionbut" name="add">
+                                    <i class="material-icons" id="centretext" style="" >
+                                        add
+                                    </i>
+                                </div>
+                                <div class="ccNBactionbut" name="edit">
+                                    <i class="material-icons" id="centretext" style="" >
+                                        edit
+                                    </i>
+                                </div>
+                                <!--<div class="ccNBactionbut">
+                                    <i class="material-icons" id="centretext" style="" >
+                                        delete
+                                    </i>
+                                </div>-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ccTitle">
+                    Lectures
+                </div>
+                <div class="ccTitleUnderline">
+
+                </div>
+                <p style="text-align: center; height: 50px; line-height:50px; padding: 0; margin: 0;" id="nolectures" name="nolectures">No lectures to show</p>
+                <div class="ccTextNotesOuter" style="display: none;">
+                    <textarea class="ccTextNotes" name="notes" placeholder="Notes" onblur="updateLectureInfo(this);"></textarea>
+
+                </div>
+
+
+            </div>
+        `;
+        
+        this.elements["outer"] = cardTemplate;
+        
+        var temp  = ["info","title","contents","add","expand","edit","nolectures","cHandle"];
+        for(var i = 0; i < temp.length; i++){
+            this.elements[temp[i]] = this.findElementByName(cardTemplate, temp[i]);
+        }
+        
+        document.getElementById("pc").appendChild(this.elements["outer"]);
     }
     
     display(){
+        //Set colours
+        //this.setColours();
+        
+        //console.log(this.elements["contents"]);
+        var noLecture = this.elements["nolectures"];
         if(this.lectures.length >0){
-            this.noLecture.style.display = "none";
+            noLecture.style.display = "none";
         }else{
-            this.noLecture.style.display = "";
+            noLecture.style.display = "";
         }
+        
+        //expanded
+        var expand = this.elements["expand"];
+        var expandText = "";
+        (this.expanded == 0) ? expandText = "add" : expandText = "remove";
+        expand.children[0].innerHTML = expandText;
+        
+        this.elements["title"] = this.title;
     }
 
-    
+    setColours(){
+        this.elements["cHandle"].style.backgroundColor = this.colors[this.chosenColor];
+    }
     
 }
+
+
+///////////////////////////////////
 
 class lecture extends card{
     constructor(title,week,completed,notes,slideBookmark,lectureID,module){
@@ -240,7 +382,7 @@ class lecture extends card{
         this.notes = notes;
         this.slideBookmark = slideBookmark;
         
-        this.expanded = 1;
+        this.expanded = 0;
         
         //parent
         this.parentModule = module;
@@ -252,7 +394,7 @@ class lecture extends card{
         this.display();
         //console.log(this.elements);
         
-        this.elements["expand"].addEventListener("click", this.toggleExpand.bind(this));
+        this.elements["expand"].addEventListener("click",this.toggleContents.bind(this));
         this.elements["check"].addEventListener("click", this.toggleCheck.bind(this));
         this.elements["notes"].addEventListener("blur", this.updateInformation.bind(this));
     }
@@ -272,7 +414,7 @@ class lecture extends card{
                         console.log(lectureList);
                         var lectureIndex = lectureList.indexOf(t);
                         delete lectureList[lectureIndex];
-                        console.log(lectureList);
+                        console.log(lectureList); 
 
                     }else{
                         openToast("Something went wrong - try again later");
@@ -371,7 +513,8 @@ class lecture extends card{
         }
         
          //Attach itself
-        document.getElementById("pc").appendChild(this.elements["outer"]);
+        this.parentModule.elements["contents"].appendChild(this.elements["outer"])
+        //document.getElementById("pc").appendChild(this.elements["outer"]);
         //this.display();
     }
     
@@ -399,10 +542,10 @@ class lecture extends card{
         //expanded
         var expand = this.elements["expand"];
         var expandText = "";
-        (this.expanded == 1) ? expandText = "add" : expandText = "remove";
+        (this.expanded == 0) ? expandText = "add" : expandText = "remove";
         expand.children[0].innerHTML = expandText;
         //contents
-        this.toggleContents();
+        //this.toggleContents();
         
         //bookmark
         this.elements["bookmark"].value = this.slideBookmark;
