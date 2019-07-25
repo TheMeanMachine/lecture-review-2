@@ -40,7 +40,6 @@ class myApp{
                         var id = myArr[i]['ID'];
                         var code = myArr[i]['code'];
                         var title = myArr[i]['title'];
-
                         var desc = myArr[i]['description'];
                         var leader = myArr[i]['leader'];
                         var credits = myArr[i]['credits'];
@@ -50,7 +49,7 @@ class myApp{
                         var year = myArr[i]['year'];
                         var sem = myArr[i]['semester'];
                         
-                        var color = 1;
+                        var color = 2;
 
                         var newMod = new module(id,
                                                title,
@@ -89,7 +88,15 @@ class myApp{
 
 class card{
     constructor(){
-        this.colors = ["#ffffff","#a5d4ff"];
+        this.colors = {
+            "white":{
+                "primary" : "#ffffff",
+                "secondary" : "#",
+                "tertiary" : "#",
+            }
+        }//Setting up a better form of colours - just temp underneath
+        this.colors = ["#ffffff","#f37f80","#ffba92"];
+        
     }
     
     toggleContents(){
@@ -187,7 +194,7 @@ class module extends card{
 
             }
         
-            maxHeight = (amtClosedLectures * 160) + (amtOpenLectures * 300);
+            maxHeight = (amtClosedLectures * 180) + (amtOpenLectures * 340);
         }
         
         
@@ -250,12 +257,12 @@ class module extends card{
         cardTemplate.setAttribute('class', 'card');
 
         cardTemplate.innerHTML = `
-              <div class="cHandle">
+              <div class="cHandle" name="handle">
                 <div class="cHandleOuter">
                     <div class="cHandleInner">
                         <div class="ch_lCheck">
                             <div class="ch_lCheckbox" name="info">
-                                <i class="material-icons" style="user-select: none;">
+                                <i class="material-icons" style="user-select: none;" name="infoIcon">
                                     info
                                 </i>
                             </div>
@@ -264,14 +271,14 @@ class module extends card{
                             <div class="ch_lTextInner">
 
                             </div>
-                            <div class="ch_mTextInner" name="title">
+                            <div class="ch_mTextInner" name="titleHead">
                             </div>
 
                         </div>
                         <div class="ch_rExpand" >
                             <div class="ch_rExpandInner">
                                 <div class="ch_rExpandInnerText" name="expand">
-                                    <i class="material-icons" style="" >
+                                    <i class="material-icons" style="" name="expandIcon">
                                         add
                                     </i>
 
@@ -287,26 +294,26 @@ class module extends card{
 
                 <!--For specific uses-->
                 <div class="ccNavbar">
-                    <div class="ccNavbarInner">
+                    <div class="ccNavbarInner" >
                         <div class="ccNBbookmarkOuter">
                             <div class="ccNBbookmarkInner" style="display: none">
                                 Slide
                                 <input class="ccNBbookmark" type="number" name="" value="0" onblur="updateLectureInfo(this);" min="0" max="150">
                             </div>
                         </div>
-                        <div class="ccNBactionOuter">
-                            <div class="ccNBactionInner">
-                                <div class="ccNBactionbut" name="add">
-                                    <i class="material-icons" id="centretext" style="" >
+                        <div class="ccNBactionOuter" >
+                            <div class="ccNBactionInner" >
+                                <div class="ccNBactionbut" name="add"  >
+                                    <i class="material-icons" id="centretext" style=""  name="addText">
                                         add
                                     </i>
                                 </div>
-                                <div class="ccNBactionbut" name="edit">
-                                    <i class="material-icons" id="centretext" style="" >
+                                <div class="ccNBactionbut" name="edit" >
+                                    <i class="material-icons" id="centretext" style=""  name="editText">
                                         edit
                                     </i>
                                 </div>
-                                <!--<div class="ccNBactionbut">
+                                <!--<div class="ccNBactionbut" name="deleteText">
                                     <i class="material-icons" id="centretext" style="" >
                                         delete
                                     </i>
@@ -315,10 +322,10 @@ class module extends card{
                         </div>
                     </div>
                 </div>
-                <div class="ccTitle">
+                <div class="ccTitle" name="lecturesHeader">
                     Lectures
                 </div>
-                <div class="ccTitleUnderline">
+                <div class="ccTitleUnderline" name="underline">
 
                 </div>
                 <p style="text-align: center; height: 50px; line-height:50px; padding: 0; margin: 0;" id="nolectures" name="nolectures">No lectures to show</p>
@@ -333,7 +340,7 @@ class module extends card{
         
         this.elements["outer"] = cardTemplate;
         
-        var temp  = ["info","title","contents","add","expand","edit","nolectures","cHandle"];
+        var temp  = ["info","titleHead","contents","add","expand","edit","nolectures","handle","addText","editText","deleteText","lecturesHeader","underline","infoIcon","expandIcon"];
         for(var i = 0; i < temp.length; i++){
             this.elements[temp[i]] = this.findElementByName(cardTemplate, temp[i]);
         }
@@ -343,7 +350,7 @@ class module extends card{
     
     display(){
         //Set colours
-        //this.setColours();
+        this.setColours();
         
         //console.log(this.elements["contents"]);
         var noLecture = this.elements["nolectures"];
@@ -359,11 +366,21 @@ class module extends card{
         (this.expanded == 0) ? expandText = "add" : expandText = "remove";
         expand.children[0].innerHTML = expandText;
         
-        this.elements["title"] = this.title;
+        this.elements["titleHead"].innerHTML = this.title;
     }
 
     setColours(){
-        this.elements["cHandle"].style.backgroundColor = this.colors[this.chosenColor];
+        var color = this.colors[this.chosenColor];
+        if(this.chosenColor != 0){
+            this.elements["underline"].style.borderBottom = "1px white solid";
+            var temp = ["addText", "editText", "lecturesHeader","infoIcon", "expandIcon","nolectures","titleHead"];   
+            for(var i = 0; i < temp.length; i++){
+                this.elements[temp[i]].style.color = "white";
+                
+            }
+        }
+        this.elements["handle"].style.background = color;
+        this.elements["contents"].style.background = color;
     }
     
 }
@@ -381,7 +398,7 @@ class lecture extends card{
         this.completed = completed;
         this.notes = notes;
         this.slideBookmark = slideBookmark;
-        
+        this.chosenColor = 0;
         this.expanded = 0;
         
         //parent
@@ -436,7 +453,7 @@ class lecture extends card{
         cardTemplate.setAttribute('class', 'card');
         
         cardTemplate.innerHTML = `
-            <div class="cHandle">
+            <div class="cHandle" name="handle">
                 <div class="cHandleOuter">
                     <div class="cHandleInner">
                         <div class="ch_lCheck">
@@ -507,7 +524,7 @@ class lecture extends card{
         
         this.elements["outer"] = cardTemplate;
         
-        var temp  = ["check","title","expand","contents","bookmark","edit","delete","notes","week"];
+        var temp  = ["check","title","expand","contents","bookmark","edit","delete","notes","week","handle"];
         for(var i = 0; i < temp.length; i++){
             this.elements[temp[i]] = this.findElementByName(cardTemplate, temp[i]);
         }
@@ -544,8 +561,9 @@ class lecture extends card{
         var expandText = "";
         (this.expanded == 0) ? expandText = "add" : expandText = "remove";
         expand.children[0].innerHTML = expandText;
-        //contents
-        //this.toggleContents();
+        //colours
+        this.setColours();
+        
         
         //bookmark
         this.elements["bookmark"].value = this.slideBookmark;
@@ -556,6 +574,12 @@ class lecture extends card{
         //week
         this.elements["week"].innerHTML = this.week;
         
+    }
+    
+    setColours(){
+        var color = this.colors[this.chosenColor];
+        this.elements["handle"].style.background = color;
+        this.elements["contents"].style.background = color;
     }
     
     toggleCheck(){
