@@ -189,6 +189,8 @@ class module extends card{
         
         this.lectures = [];
 
+        this.colorChoices = {};
+        this.colorsOpen = false;
 
         this.expanded = 0;
         //elements
@@ -200,20 +202,23 @@ class module extends card{
         this.makeLectureList();
 
         this.elements["expand"].addEventListener("click",this.toggleContents.bind(this));
+        this.elements["color"].addEventListener("click",this.toggleColorChoice.bind(this));
     }
     
     calculateMaxHeight(){
-        var maxHeight = 150;
+        var maxHeight = 200;
+        //(this.colorsOpen) ? maxHeight = 190 : maxHeight = 190;
         var amtOpenLectures = 0;
         var amtClosedLectures = 0;
         //Work out size needed to accomodate for the lectures expanded and closed
         if(this.lectures.length > 0){
+            maxHeight=100;
             for(var i = 0; i < this.lectures.length; i++){
                 (this.lectures[i].expanded == 0) ? amtClosedLectures += 1 : amtOpenLectures += 1;
 
             }
         
-            maxHeight = (amtClosedLectures * 180) + (amtOpenLectures * 340);
+            maxHeight += (amtClosedLectures * 200) + (amtOpenLectures * 340);
         }
         
         
@@ -346,6 +351,15 @@ class module extends card{
                         </div>
                     </div>
                 </div>
+                <div class="colorBar" name="colorBar">
+                    <div class="colorBarInner">
+                        <div class="cbBarActionOuter">
+                            <div class="cbBarActionInner" name="colorBarInner">
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="ccTitle" name="lecturesHeader">
                     Lectures
                 </div>
@@ -364,9 +378,43 @@ class module extends card{
         
         this.elements["outer"] = cardTemplate;
         
-        var temp  = ["info","titleHead","contents","add","expand","edit","nolectures","handle","addText","editText","deleteText","lecturesHeader","underline","infoIcon","expandIcon","color","colorText"];
+        var temp  = ["info","titleHead","contents","add","expand","edit","nolectures","handle","addText","editText","deleteText","lecturesHeader","underline","infoIcon","expandIcon","color","colorText","colorBarInner","colorBar"];
         for(var i = 0; i < temp.length; i++){
             this.elements[temp[i]] = this.findElementByName(cardTemplate, temp[i]);
+        }
+        
+        //Add colour options
+        for(let i in this.colors){
+            
+            //The colour
+            var tempE = document.createElement("i");
+            tempE.setAttribute("class", "colorBut");
+            tempE.style.background = this.colors[i]["primary"];
+            
+            
+            //Tick
+            var tempE1 = document.createElement("div");
+            tempE1.setAttribute("class", "material-icons colorButInner");
+            tempE1.innerHTML = "done";
+            tempE1.style.color = this.colors[i]["tertiary"];
+            tempE1.style.border = "2px " + this.colors[i]["tertiary"] + " solid";
+            tempE1.style.filter = "opacity(0)";
+            
+            //Appends
+            tempE.appendChild(tempE1);
+            this.elements["colorBarInner"].appendChild(tempE);
+            
+            //Choices
+            this.colorChoices[i] = {};
+            this.colorChoices[i]["tick"] = tempE1;
+            this.colorChoices[i]["ticked"] = false;
+            
+            
+            var t = this;
+            tempE.addEventListener("click",function(){
+                                   t.selectColor(i);
+                                   });
+            
         }
         
         document.getElementById("pc").appendChild(this.elements["outer"]);
@@ -376,6 +424,18 @@ class module extends card{
         //Set colours
         this.setColours();
         
+        //colour menu
+        for(let i in this.colorChoices ){
+            if(i == this.chosenColor){
+                this.colorChoices[i]["ticked"] == true;
+                this.colorChoices[i]["tick"].style.filter = "opacity(1)";
+            }else{
+                this.colorChoices[i]["ticked"] == false;
+                this.colorChoices[i]["tick"].style.filter = "opacity(0)";
+            }
+            
+        }
+        
         //console.log(this.elements["contents"]);
         var noLecture = this.elements["nolectures"];
         if(this.lectures.length >0){
@@ -384,6 +444,8 @@ class module extends card{
             noLecture.style.display = "";
         }
         
+        
+        
         //expanded
         var expand = this.elements["expand"];
         var expandText = "";
@@ -391,6 +453,11 @@ class module extends card{
         expand.children[0].innerHTML = expandText;
         
         this.elements["titleHead"].innerHTML = this.title;
+        
+        
+        //Reconfigure max height
+        var maxHeight = this.calculateMaxHeight;
+        this.elements["contents"].style.maxHeight = maxHeight + "px"; 
     }
 
     setColours(){
@@ -426,6 +493,26 @@ class module extends card{
             this.elements[temp[i]].addEventListener("mouseout",this.mouseOut);
         }
         
+    }
+    
+    toggleColorChoice(){
+        var inner = this.elements["colorBar"];
+        if(this.colorsOpen){//Close
+            this.colorsOpen = false;
+            console.log("closing");
+            inner.style.maxHeight = "0px";
+            
+        }else{//Open
+            this.colorsOpen = true;
+            console.log("opening");
+            inner.style.maxHeight = "50px";
+        }
+        this.display();
+    }
+    
+    selectColor(choice){
+        this.chosenColor = choice;
+        this.display();
     }
     
     

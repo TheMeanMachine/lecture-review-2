@@ -32,7 +32,7 @@
     width: 100%;
     background-color: white;
     max-height: 0px;
-    transition: all ease-in-out 1s;
+    transition: max-height ease-in-out 1s;
 }
 
 .ch_lText{
@@ -228,4 +228,65 @@
     margin: 5px 50px auto;
     
     border-bottom: 1px #7F838C solid;
+}
+
+/*Colour bar*/
+.colorBar{
+    max-height: 0px;
+    width: 100%;
+    overflow: hidden;
+    margin-bottom: 10px;
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+
+.colorBarInner{
+    height: 100%;
+    width: 100%;
+    margin: 0 auto;
+
+}
+
+.cbBarActionOuter{
+    height: 100%;
+    width: 100%;
+    
+}
+
+.cbBarActionInner{
+    height: 100%;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+}
+
+.colorBut{
+    height: 40px;
+    width: 40px;
+    margin: 0 auto;
+
+    border-radius: 100%;
+    text-align: center;
+
+    user-select: none;
+    background: red;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+
+.colorBut:hover {
+    color: #4384F4;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12), 0 2px 4px rgba(0, 0, 0, 0.24);
+    filter: opacity(0.5);
+}
+
+.colorButInner{
+    padding: 0px;
+    margin-top: 2.5px;
+    height: 30px;
+    width: 30px;
+    line-height: 30px !important;
+    /*filter: opacity(0);*/
+    
+    border-radius: 100%;
+    
 }
