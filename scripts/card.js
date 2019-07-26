@@ -48,8 +48,9 @@ class myApp{
 
                         var year = myArr[i]['year'];
                         var sem = myArr[i]['semester'];
-                        
-                        var color = 2;
+                        /////////
+                        var temp = ["white","orange","red","blue","purple"];
+                        var color = temp[Math.floor(Math.random() * temp.length)];
 
                         var newMod = new module(id,
                                                title,
@@ -90,13 +91,31 @@ class card{
     constructor(){
         this.colors = {
             "white":{
-                "primary" : "#ffffff",
-                "secondary" : "#",
-                "tertiary" : "#",
+                "primary" : "#FFFFFF",
+                "secondary" : "#212121",
+                "tertiary" : "#7F838C"
+            },
+            "orange":{
+                "primary" : "#FFA726",
+                "secondary" : "#212121",
+                "tertiary" : "#FFF3E0"
+            },
+            "red":{
+                "primary" : "#FF7043",
+                "secondary" : "#212121",
+                "tertiary" : "#FFCCBC"
+            },
+            "blue":{
+                "primary" : "#42A5F5",
+                "secondary" : "#212121",
+                "tertiary" : "#BBDEFB"
+            },
+            "purple":{
+                "primary" : "#7E57C2",
+                "secondary" : "#212121",
+                "tertiary" : "#D1C4E9"
             }
-        }//Setting up a better form of colours - just temp underneath
-        this.colors = ["#ffffff","#f37f80","#ffba92"];
-        
+        };
     }
     
     toggleContents(){
@@ -313,6 +332,11 @@ class module extends card{
                                         edit
                                     </i>
                                 </div>
+                                <div class="ccNBactionbut" name="color" >
+                                    <i class="material-icons" id="centretext" style=""  name="colorText">
+                                        color_lens
+                                    </i>
+                                </div>
                                 <!--<div class="ccNBactionbut" name="deleteText">
                                     <i class="material-icons" id="centretext" style="" >
                                         delete
@@ -340,7 +364,7 @@ class module extends card{
         
         this.elements["outer"] = cardTemplate;
         
-        var temp  = ["info","titleHead","contents","add","expand","edit","nolectures","handle","addText","editText","deleteText","lecturesHeader","underline","infoIcon","expandIcon"];
+        var temp  = ["info","titleHead","contents","add","expand","edit","nolectures","handle","addText","editText","deleteText","lecturesHeader","underline","infoIcon","expandIcon","color","colorText"];
         for(var i = 0; i < temp.length; i++){
             this.elements[temp[i]] = this.findElementByName(cardTemplate, temp[i]);
         }
@@ -370,17 +394,48 @@ class module extends card{
     }
 
     setColours(){
-        var color = this.colors[this.chosenColor];
-        if(this.chosenColor != 0){
-            this.elements["underline"].style.borderBottom = "1px white solid";
-            var temp = ["addText", "editText", "lecturesHeader","infoIcon", "expandIcon","nolectures","titleHead"];   
-            for(var i = 0; i < temp.length; i++){
-                this.elements[temp[i]].style.color = "white";
-                
-            }
+        var colorP = this.colors[this.chosenColor]["primary"];
+        var colorS = this.colors[this.chosenColor]["secondary"];
+        var colorT = this.colors[this.chosenColor]["tertiary"];
+        
+        //Primary
+        this.elements["handle"].style.background = colorP;
+        this.elements["contents"].style.background = colorP;
+        
+        //Secondary
+        var temp = ["lecturesHeader","infoIcon", "expandIcon","nolectures","titleHead"];   
+        for(var i = 0; i < temp.length; i++){
+            this.elements[temp[i]].style.color = colorS;
+
         }
-        this.elements["handle"].style.background = color;
-        this.elements["contents"].style.background = color;
+
+        //Tertiary
+        var temp = ["addText", "editText", "colorText", "lecturesHeader","nolectures"];   
+        for(var i = 0; i < temp.length; i++){
+            this.elements[temp[i]].style.color = colorT;
+            this.elements[temp[i]].setAttribute("color", colorT);
+        }
+        this.elements["underline"].style.borderBottom = "1px "+colorT+" solid";
+        
+        
+        //Button hover
+        var temp = ["add", "edit", "color"];   
+        for(var i = 0; i < temp.length; i++){
+            
+            this.elements[temp[i]].addEventListener("mouseover",this.mouseIn);
+            this.elements[temp[i]].addEventListener("mouseout",this.mouseOut);
+        }
+        
+    }
+    
+    
+    //For the hovers
+    mouseIn(){
+        this.children[0].style.color = "#4384F4";
+    }
+    
+    mouseOut(){
+        this.children[0].style.color = this.children[0].getAttribute("color");
     }
     
 }
