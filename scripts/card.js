@@ -48,9 +48,9 @@ class myApp{
 
                         var year = myArr[i]['year'];
                         var sem = myArr[i]['semester'];
-                        /////////
-                        var temp = ["white","orange","red","blue","purple"];
-                        var color = temp[Math.floor(Math.random() * temp.length)];
+             
+                        var color = myArr[i]['color'];
+                       
 
                         var newMod = new module(id,
                                                title,
@@ -175,6 +175,7 @@ class module extends card{
     constructor(modID,title,code,semester,year,desc,leader,credits,examPer,cwPer, color){
         super();
         //details
+        
         this.modID = modID;
         this.title = title;
         this.code = code;
@@ -185,12 +186,17 @@ class module extends card{
         this.credits = credits;
         this.examPer = examPer;
         this.cwPer = cwPer;
-        this.chosenColor = color;
         
+        
+        //Lectures associated with this module
         this.lectures = [];
-
+        
+        //The colour options settings
         this.colorChoices = {};
+        //Colour options
         this.colorsOpen = false;
+        //Set the colour, correct if not a valid colour
+        (color in this.colors) ? this.chosenColor = color : this.chosenColor = "white";
 
         this.expanded = 0;
         //elements
@@ -200,9 +206,11 @@ class module extends card{
         this.drawElements();
         this.display();
         this.makeLectureList();
-
+        
+        //Set listeners
         this.elements["expand"].addEventListener("click",this.toggleContents.bind(this));
         this.elements["color"].addEventListener("click",this.toggleColorChoice.bind(this));
+        this.elements["titleHeadIn"].addEventListener("change",this.setTitle.bind(this));
     }
     
     calculateMaxHeight(){
@@ -293,9 +301,10 @@ class module extends card{
                         </div>
                         <div class="ch_lText">
                             <div class="ch_lTextInner">
-
+                    
                             </div>
                             <div class="ch_mTextInner" name="titleHead">
+                                <input class="ch_mTextInnerIn" type="text" name="titleHeadIn" readonly>
                             </div>
 
                         </div>
@@ -322,7 +331,7 @@ class module extends card{
                         <div class="ccNBbookmarkOuter">
                             <div class="ccNBbookmarkInner" style="display: none">
                                 Slide
-                                <input class="ccNBbookmark" type="number" name="" value="0" onblur="updateLectureInfo(this);" min="0" max="150">
+                                <input class="ccNBbookmark" type="number" name="" value="0" min="0" max="150">
                             </div>
                         </div>
                         <div class="ccNBactionOuter" >
@@ -368,7 +377,7 @@ class module extends card{
                 </div>
                 <p style="text-align: center; height: 50px; line-height:50px; padding: 0; margin: 0;" id="nolectures" name="nolectures">No lectures to show</p>
                 <div class="ccTextNotesOuter" style="display: none;">
-                    <textarea class="ccTextNotes" name="notes" placeholder="Notes" onblur="updateLectureInfo(this);"></textarea>
+                    <textarea class="ccTextNotes" name="notes" placeholder="Notes"></textarea>
 
                 </div>
 
@@ -378,7 +387,7 @@ class module extends card{
         
         this.elements["outer"] = cardTemplate;
         
-        var temp  = ["info","titleHead","contents","add","expand","edit","nolectures","handle","addText","editText","deleteText","lecturesHeader","underline","infoIcon","expandIcon","color","colorText","colorBarInner","colorBar"];
+        var temp  = ["info","titleHead","contents","add","expand","edit","nolectures","handle","addText","editText","deleteText","lecturesHeader","underline","infoIcon","expandIcon","color","colorText","colorBarInner","colorBar","titleHeadIn"];
         for(var i = 0; i < temp.length; i++){
             this.elements[temp[i]] = this.findElementByName(cardTemplate, temp[i]);
         }
@@ -452,7 +461,7 @@ class module extends card{
         (this.expanded == 0) ? expandText = "add" : expandText = "remove";
         expand.children[0].innerHTML = expandText;
         
-        this.elements["titleHead"].innerHTML = this.title;
+        this.elements["titleHeadIn"].value = this.title;
         
         
         //Reconfigure max height
@@ -470,7 +479,7 @@ class module extends card{
         this.elements["contents"].style.background = colorP;
         
         //Secondary
-        var temp = ["lecturesHeader","infoIcon", "expandIcon","nolectures","titleHead"];   
+        var temp = ["lecturesHeader","infoIcon", "expandIcon","nolectures","titleHeadIn"];   
         for(var i = 0; i < temp.length; i++){
             this.elements[temp[i]].style.color = colorS;
 
@@ -495,6 +504,12 @@ class module extends card{
         
     }
     
+    setTitle(){
+        this.title = this.elements["titleHeadIn"].value;
+        this.updateModule();
+        this.display();
+    }
+    
     toggleColorChoice(){
         var inner = this.elements["colorBar"];
         if(this.colorsOpen){//Close
@@ -512,6 +527,7 @@ class module extends card{
     
     selectColor(choice){
         this.chosenColor = choice;
+        this.updateInformation();
         this.display();
     }
     
@@ -525,10 +541,64 @@ class module extends card{
         this.children[0].style.color = this.children[0].getAttribute("color");
     }
     
+    updateModule(){
+        var t = this;
+        
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if(this.readyState == 4 && this.status == 200) {
+                //console.log(this.responseText);
+                if(this.responseText.length <= 0){//If data exists
+
+                }else{
+                    openToast("Something went wrong - try again later");
+                }
+            }
+        };
+        xmlhttp.open("GET", "http://localhost/lecRev2/module/updateModuleInformation.php?"+
+                     "moduleID="+ t.modID +
+                     "&desc=" + t.desc +
+                     "&leader=" + t.leader +
+                     "&credits=" + t.credits +
+                     "&examPer=" + t.examPer +
+                     "&cwPer=" + t.cwPer +
+                     "&color=" + t.chosenColor, true);//URL
+        xmlhttp.send();
+
+    }
+    
+    updateInformation(){
+        var t = this;
+        
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if(this.readyState == 4 && this.status == 200) {
+                //console.log(this.responseText);
+                if(this.responseText.length <= 0){//If data exists
+
+                }else{
+                    openToast("Something went wrong - try again later");
+                }
+            }
+        };
+        xmlhttp.open("GET", "http://localhost/lecRev2/module/updateModuleInformation.php?"+
+                     "moduleID="+ t.modID +
+                     "&desc=" + t.desc +
+                     "&leader=" + t.leader +
+                     "&credits=" + t.credits +
+                     "&examPer=" + t.examPer +
+                     "&cwPer=" + t.cwPer +
+                     "&color=" + t.chosenColor, true);//URL
+        xmlhttp.send();
+
+    }
+    
 }
 
-
-///////////////////////////////////
+//################################################################################
+//################################################################################
+//################################################################################Just so I notice I scrolled too far
+//################################################################################
 
 class lecture extends card{
     constructor(title,week,completed,notes,slideBookmark,lectureID,module){
@@ -555,7 +625,8 @@ class lecture extends card{
         
         this.elements["expand"].addEventListener("click",this.toggleContents.bind(this));
         this.elements["check"].addEventListener("click", this.toggleCheck.bind(this));
-        this.elements["notes"].addEventListener("blur", this.updateInformation.bind(this));
+        this.elements["notes"].addEventListener("blur", this.setNotes.bind(this));
+        this.elements["bookmark"].addEventListener("blur", this.setSlide.bind(this));
     }
     
     deleteLecture(){
@@ -657,7 +728,7 @@ class lecture extends card{
                                 </div>
                             </div>
                             <div class="ccTextNotesOuter">
-                                <textarea class="ccTextNotes" name="notes" placeholder="Notes"  onblur="updateLectureInfo(this);"></textarea>
+                                <textarea class="ccTextNotes" name="notes" placeholder="Notes"></textarea>
                             </div>
 
 
@@ -731,14 +802,50 @@ class lecture extends card{
         }else{
             this.completed = 1;
         }
-        var xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("GET", "http://localhost/lecRev2/lecture/updateLectureInformation.php?lectureID=" + this.lectID + "&complete=" + this.completed, true);
-        xmlhttp.send();
+        /*var xmlhttp = new XMLHttpRequest();
+        xmlhttp.open("GET", "http://localhost/lecRev2/lecture/updateLectureInformation.php?"+
+                     "lectureID=" + this.lectID +
+                     "&complete=" + this.completed
+                     , true);
+        xmlhttp.send();*/
+        
+        this.updateInformation();
+        
         this.display();
     }
     
+    setSlide(){
+        this.slideBookmark = this.elements["bookmark"].value;
+        this.updateInformation();
+    }
+    
+    setNotes(){
+        this.notes = this.elements["notes"].value;
+        this.updateInformation();
+    }
+    
+    //Updates the information for lecture
     updateInformation(){
+        var t = this;
         
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if(this.readyState == 4 && this.status == 200) {
+                //console.log(this.responseText);
+                if(this.responseText.length <= 0){//If data exists
+                    
+                }else{
+                    openToast("Something went wrong - try again later");
+                }
+            }
+        };
+        xmlhttp.open("GET", "http://localhost/lecRev2/lecture/updateLectureInformation.php?"+
+                     "lectureID="+ t.lectID +
+                     "&complete=" + t.completed +
+                     "&notes=" + t.notes +
+                     "&bookmark=" + t.slideBookmark
+                     , true);//URL
+        xmlhttp.send();
     }
 }
 

@@ -98,11 +98,21 @@
     margin: 0 auto;
     font-size: 1.2em;
     border: 0;
-
+    outline-width: 0;
 }
 
-.ch_mTextInner{
+.ch_mTextInnerIn{
+    height: 100%;
+    width: auto;
+    line-height: calc(80px - 14px);
+    text-align: center;
+    margin: 0 auto;
+    font-size: 1.2em;
+    border: 0;
     outline-width: 0;
+    background-color: transparent;
+    border: 0;
+    
 }
 
 .ch_rExpandInner{
