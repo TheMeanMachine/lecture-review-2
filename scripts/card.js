@@ -1,3 +1,43 @@
+class actionButton{
+    constructor(text, icon, action, parent){
+        this.text = text;
+        this.icon = icon;
+        this.action = action;
+        
+        //Class the button belongs to
+        this.parent = parent;
+        
+        //Outer div
+        this.button;
+        
+        //Make the elements
+        this.draw();
+
+        //Event listens for click, runs the action
+        this.button.addEventListener("click",this.action.bind(this));
+        
+    }
+    
+    draw(){
+        this.button = document.createElement("div");
+        this.button.setAttribute("class", "ccNBactionbut");
+        this.button.setAttribute("name", this.text);
+        
+        this.iconEl = document.createElement("i");
+        this.iconEl.setAttribute("class", "material-icons");
+        this.iconEl.setAttribute("id", "centretext");
+        this.iconEl.setAttribute("name", this.text + "Text");
+        
+        this.button.appendChild(this.iconEl);
+        
+        this.setIcon();                        
+    }
+    
+    setIcon(){
+        this.iconEl.innerHTML = this.icon;
+    }
+}
+
 class myApp{
     constructor(){
         this.modules = {
@@ -23,10 +63,43 @@ class myApp{
             }
         };
         
-        this.makeModuleList();
+        this.moduleActions = [];
+        this.lectureActions = [];
+        
+        this.loadPlugins();
+        
+        this.makeModuleList();//Generate the modules
+        
         
     }
     
+    
+    /*
+    Adds an action button to the module action bar
+    @param text - the text of the action the button performs
+    @param icon - the icon name referring to the material-icon package
+    @param action - the function needed to run
+    */
+    addModuleAction(text, icon, action){
+        var temp = new actionButton(text, icon, action);
+        this.moduleActions.push(temp);
+    }
+    
+    /*
+    Adds an action button to the lecture action bar
+    @param text - the text of the action the button performs
+    @param icon - the icon name referring to the material-icon package
+    @param action - the function needed to run
+    */
+    addLectureAction(text, icon, action){
+        var temp = new actionButton(text, icon, action);
+        this.lectureActions.push(temp);
+    }
+    
+    
+    /*
+    Forms the list of modules 
+    */
     makeModuleList(){
         var t = this;
         var xmlhttp = new XMLHttpRequest();
@@ -83,12 +156,19 @@ class myApp{
         xmlhttp.open("POST", "http://localhost/lecRev2/module/getModules.php", true);//URL
         xmlhttp.send();
     }
-
     
+    loadPlugins(){
+        this.importPlugin("colorSelector");
+    }
+    
+    importPlugin(pluginName){
+        document.writeln("<script type='text/javascript' src='/plugins/"+pluginName+".js'></script>");
+    }
 }
 
 class card{
     constructor(){
+        //Colours need to be moved to DB at some point
         this.colors = {
             "white":{
                 "primary" : "#FFFFFF",
@@ -118,31 +198,24 @@ class card{
         };
     }
     
+    
+    /*
+    Toggles the contents of the card
+    */
     toggleContents(){
-        var maxHeight = 0;
-        var contents = this.elements["contents"];
+        this.maxHeight = 0;
+        //var contents = this.elements["contents"];
         
         if(this.expanded == 1){//Closing
             this.expanded = 0;
 
         }else{
             this.expanded = 1;
-            if(this.lectures){
-                //Is a module
-                maxHeight = this.calculateMaxHeight();
-
-            }else{
-                //Is a lecture
-                maxHeight = 150;
-                //Expand the parent module to account for the expanded lecture
-                var parentModuleContents = this.parentModule.elements["contents"];
-                parentModuleContents.style.maxHeight = this.parentModule.calculateMaxHeight();
-            }
             
-            
-            
+            this.maxHeight = this.calculateMaxHeight();
         }
-        contents.style.maxHeight = maxHeight + "px"; 
+        
+        //contents.style.maxHeight = maxHeight + "px"; 
         this.display();
     }
     
@@ -209,24 +282,25 @@ class module extends card{
         
         //Set listeners
         this.elements["expand"].addEventListener("click",this.toggleContents.bind(this));
-        this.elements["color"].addEventListener("click",this.toggleColorChoice.bind(this));
+        //this.elements["color"].addEventListener("click",this.toggleColorChoice.bind(this));
         this.elements["titleHeadIn"].addEventListener("change",this.setTitle.bind(this));
     }
     
     calculateMaxHeight(){
-        var maxHeight = 200;
+        var maxHeight = 180;
         //(this.colorsOpen) ? maxHeight = 190 : maxHeight = 190;
         var amtOpenLectures = 0;
         var amtClosedLectures = 0;
-        //Work out size needed to accomodate for the lectures expanded and closed
+        //Work out size needed to accomodate for the lectures expanded and closed & the color bar
         if(this.lectures.length > 0){
-            maxHeight=100;
             for(var i = 0; i < this.lectures.length; i++){
                 (this.lectures[i].expanded == 0) ? amtClosedLectures += 1 : amtOpenLectures += 1;
 
             }
+            
+            (this.colorsOpen) ? this.maxHeight += 80 : null;
         
-            maxHeight += (amtClosedLectures * 200) + (amtOpenLectures * 340);
+            maxHeight += (amtClosedLectures * 200) + (amtOpenLectures * 300);
         }
         
         
@@ -328,14 +402,9 @@ class module extends card{
                 <!--For specific uses-->
                 <div class="ccNavbar">
                     <div class="ccNavbarInner" >
-                        <div class="ccNBbookmarkOuter">
-                            <div class="ccNBbookmarkInner" style="display: none">
-                                Slide
-                                <input class="ccNBbookmark" type="number" name="" value="0" min="0" max="150">
-                            </div>
-                        </div>
+                        
                         <div class="ccNBactionOuter" >
-                            <div class="ccNBactionInner" >
+                            <div class="ccNBactionInner" name="actionBar">
                                 <div class="ccNBactionbut" name="add"  >
                                     <i class="material-icons" id="centretext" style=""  name="addText">
                                         add
@@ -346,16 +415,8 @@ class module extends card{
                                         edit
                                     </i>
                                 </div>
-                                <div class="ccNBactionbut" name="color" >
-                                    <i class="material-icons" id="centretext" style=""  name="colorText">
-                                        color_lens
-                                    </i>
-                                </div>
-                                <!--<div class="ccNBactionbut" name="deleteText">
-                                    <i class="material-icons" id="centretext" style="" >
-                                        delete
-                                    </i>
-                                </div>-->
+                                
+                                
                             </div>
                         </div>
                     </div>
@@ -387,9 +448,20 @@ class module extends card{
         
         this.elements["outer"] = cardTemplate;
         
-        var temp  = ["info","titleHead","contents","add","expand","edit","nolectures","handle","addText","editText","deleteText","lecturesHeader","underline","infoIcon","expandIcon","color","colorText","colorBarInner","colorBar","titleHeadIn"];
+        var temp  = ["info","titleHead","contents","add","expand","edit","nolectures","handle","addText","editText","deleteText","lecturesHeader","underline","infoIcon","expandIcon","color","colorText","colorBarInner","colorBar","titleHeadIn", "actionBar"];
         for(var i = 0; i < temp.length; i++){
             this.elements[temp[i]] = this.findElementByName(cardTemplate, temp[i]);
+        }
+        
+        var actionBar = this.elements["actionBar"];
+        
+        //Add module action buttons
+        for(var i = 0; i < app.moduleActions.length; i++){
+            var moduleFoo = app.moduleActions[i];
+            this.elements[moduleFoo.text] = new actionButton(moduleFoo.text, moduleFoo.icon, moduleFoo.action, this);
+            this.elements["actionBar"].appendChild(this.elements[moduleFoo.text].button);
+            console.log(app.moduleActions[i].button);
+            console.log(this.elements["actionBar"]);
         }
         
         //Add colour options
@@ -463,10 +535,11 @@ class module extends card{
         
         this.elements["titleHeadIn"].value = this.title;
         
-        
         //Reconfigure max height
-        var maxHeight = this.calculateMaxHeight;
-        this.elements["contents"].style.maxHeight = maxHeight + "px"; 
+        
+        this.elements["contents"].style.maxHeight = this.maxHeight + "px"; 
+        
+        
     }
 
     setColours(){
@@ -495,7 +568,7 @@ class module extends card{
         
         
         //Button hover
-        var temp = ["add", "edit", "color"];   
+        var temp = ["add", "edit"];   
         for(var i = 0; i < temp.length; i++){
             
             this.elements[temp[i]].addEventListener("mouseover",this.mouseIn);
@@ -627,6 +700,12 @@ class lecture extends card{
         this.elements["check"].addEventListener("click", this.toggleCheck.bind(this));
         this.elements["notes"].addEventListener("blur", this.setNotes.bind(this));
         this.elements["bookmark"].addEventListener("blur", this.setSlide.bind(this));
+    }
+    
+    calculateMaxHeight(){
+        var maxHeight = 200;
+        
+        return maxHeight;
     }
     
     deleteLecture(){
@@ -787,6 +866,9 @@ class lecture extends card{
         //week
         this.elements["week"].innerHTML = this.week;
         
+        //Set the height
+        this.elements["contents"].style.maxHeight = this.maxHeight + "px"; 
+        
     }
     
     setColours(){
@@ -851,3 +933,8 @@ class lecture extends card{
 
 
 var app = new myApp();
+
+
+
+
+
