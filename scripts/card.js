@@ -1,11 +1,12 @@
 class actionButton{
-    constructor(text, icon, action, parent){
+    constructor(text, icon, action, parent, color){
         this.text = text;
         this.icon = icon;
         this.action = action;
         
         //Class the button belongs to
         this.parent = parent;
+        
         
         //Outer div
         this.button;
@@ -15,6 +16,9 @@ class actionButton{
 
         //Event listens for click, runs the action
         this.button.addEventListener("click",this.action.bind(this));
+        this.button.addEventListener("mouseover",this.mouseIn);
+        this.button.addEventListener("mouseout",this.mouseOut);
+        
         
     }
     
@@ -33,6 +37,15 @@ class actionButton{
         this.setIcon();                        
     }
     
+    //For the hovers
+    mouseIn(){
+        this.children[0].style.color = "#4384F4";
+    }
+
+    mouseOut(){
+        this.children[0].style.color = this.children[0].getAttribute("color");
+    }
+
     setIcon(){
         this.iconEl.innerHTML = this.icon;
     }
@@ -63,12 +76,39 @@ class myApp{
             }
         };
         
+        this.editing = false;
+        this.editingObject;
+        
         this.moduleActions = [];
         this.lectureActions = [];
         
-        this.loadPlugins();
+        this.loadPlugins();//Load olugins
         
         this.makeModuleList();//Generate the modules
+        
+        this.addModuleAction("add", "add", function(){
+            var parent = this.parent;
+            parent.lectures.push(new lecture("",
+                                                             "",
+                                                             1,
+                                                             "",
+                                                             "0",
+                                                             "0",
+                                                             parent));
+            parent.maxHeight = parent.calculateMaxHeight();
+            parent.display();
+        })
+        
+        this.addModuleAction("edit", "edit", function(){
+            var parent = this.parent;
+            parent.toggleEditable();
+        })
+        
+        this.addModuleAction("color", "color_lens",function(){
+            this.parent.toggleColorChoice();
+        })
+        
+     
         
         
     }
@@ -94,6 +134,7 @@ class myApp{
     addLectureAction(text, icon, action){
         var temp = new actionButton(text, icon, action);
         this.lectureActions.push(temp);
+        
     }
     
     
@@ -203,14 +244,31 @@ class card{
     Toggles the contents of the card
     */
     toggleContents(){
-        this.maxHeight = 0;
         //var contents = this.elements["contents"];
         
         if(this.expanded == 1){//Closing
             this.expanded = 0;
-
+this.maxHeight = this.calculateMaxHeight();
         }else{
             this.expanded = 1;
+            
+            this.maxHeight = this.calculateMaxHeight();
+        }
+        
+        //contents.style.maxHeight = maxHeight + "px"; 
+        this.display();
+    }
+    
+    /*
+    Toggles the extra information of the card
+    */
+    toggleExtraInformation(){
+
+        if(this.extraInformation == 1){//Closing
+            this.extraInformation = 0;
+
+        }else{
+            this.extraInformation = 1;
             
             this.maxHeight = this.calculateMaxHeight();
         }
@@ -241,9 +299,69 @@ class card{
         return cur;
        
     }
+    /* Requires bind */
+    toggleEditable(override){
+        if(app.editingObject != null && this.title == app.editingObject.title){
+            //save
+            this.stopEditingCurrentObject();
+            console.log("Saving");
+            return;
+        }
+        if((override == null || override == "undefined") && app.editing){
+                confirmThis("Are you sure?", "This will remove all changes you've made", "CANCEL", "CONFIRM",
+                function(){
+                    this.stopEditingCurrentObject();
+                    this.toggleEditable(true);
+
+                }.bind(this),
+                function(){
+                    
+                }.bind(this));
+        }else{
+            console.log("toggleEditable: app is overriden or not editing");
+            app.editing = true;
+            this.editing = true;
+            app.editingObject = this;
+            this.setFieldsEditable(true);
+            var editButtonIcon = this.findElementByName(this.elements["actionBar"], "editText");
+            editButtonIcon.innerHTML = "done";
+            //this.toggleEditSpecifics();
+        }
+        
+    }
+    
+    stopEditingCurrentObject(){
+        var t = app.editingObject;
+        t.setFieldsEditable(false);
+        
+        var editButtonIcon = t.findElementByName(t.elements["actionBar"], "editText");
+        editButtonIcon.innerHTML = "edit";
+        t.editing = false;
+        
+        app.editingObject = null;
+        app.editing = false;
+    }
+    
+    setFieldsEditable(editable){
+        
+        var temp = ["titleHeadIn","code"];   
+        for(var i = 0; i < temp.length; i++){
+            if(!editable){
+                this.elements[temp[i]].setAttribute("readonly", "true");
+                
+            }else{
+                this.elements[temp[i]].removeAttribute("readonly");
+            }
+            
+        }
+        
+        
+    }
+    
+    
 }
 
-
+//==============================================================
 class module extends card{
     constructor(modID,title,code,semester,year,desc,leader,credits,examPer,cwPer, color){
         super();
@@ -260,6 +378,8 @@ class module extends card{
         this.examPer = examPer;
         this.cwPer = cwPer;
         
+        this.editing = false;
+        
         
         //Lectures associated with this module
         this.lectures = [];
@@ -272,18 +392,22 @@ class module extends card{
         (color in this.colors) ? this.chosenColor = color : this.chosenColor = "white";
 
         this.expanded = 0;
+        this.extraInformation = 0;
         //elements
         this.elements = {};
+        this.actionButtons = [];
         
         //function calls
         this.drawElements();
         this.display();
         this.makeLectureList();
+        this.display();
         
         //Set listeners
         this.elements["expand"].addEventListener("click",this.toggleContents.bind(this));
         //this.elements["color"].addEventListener("click",this.toggleColorChoice.bind(this));
         this.elements["titleHeadIn"].addEventListener("change",this.setTitle.bind(this));
+        this.elements["info"].addEventListener("click",this.toggleExtraInformation.bind(this));
     }
     
     calculateMaxHeight(){
@@ -292,16 +416,25 @@ class module extends card{
         var amtOpenLectures = 0;
         var amtClosedLectures = 0;
         //Work out size needed to accomodate for the lectures expanded and closed & the color bar
-        if(this.lectures.length > 0){
-            for(var i = 0; i < this.lectures.length; i++){
-                (this.lectures[i].expanded == 0) ? amtClosedLectures += 1 : amtOpenLectures += 1;
-
-            }
+        if(this.expanded == 1){
             
-            (this.colorsOpen) ? this.maxHeight += 80 : null;
         
-            maxHeight += (amtClosedLectures * 200) + (amtOpenLectures * 300);
+            if(this.lectures.length > 0){
+                for(var i = 0; i < this.lectures.length; i++){
+                    (this.lectures[i].expanded == 0) ? amtClosedLectures += 1 : amtOpenLectures += 1;
+
+                }
+
+                
+
+                maxHeight += (amtClosedLectures * 200) + (amtOpenLectures * 300);
+            }
         }
+        (this.colorsOpen) ? this.maxHeight += 80 : null;
+        if(this.extraInformation == 1){
+            maxHeight += 10;
+        }
+        
         
         
         return maxHeight;
@@ -375,10 +508,10 @@ class module extends card{
                         </div>
                         <div class="ch_lText">
                             <div class="ch_lTextInner">
-                    
+                                <input class="ch_lTextInnerInput" type="text" name="code" value="" placeholder="Code" autocomplete="off" >
                             </div>
                             <div class="ch_mTextInner" name="titleHead">
-                                <input class="ch_mTextInnerIn" type="text" name="titleHeadIn" readonly>
+                                <input class="ch_mTextInnerIn" type="text" name="titleHeadIn" >
                             </div>
 
                         </div>
@@ -397,6 +530,38 @@ class module extends card{
                 </div>
 
             </div>
+            <div class="cInfo cContents" name="extraInfo">
+            <div class="formOuter">
+                    <div class="formInner">
+                        <div class="formField">
+                            <div class="ff_upperBand">
+                                Credits
+                            </div>
+                            <div class="ff_lowerBand">
+                                <input class="ff_lbInput" type="number" placeholder="" value="" min="0" max="100" name="credits" id="credits">
+                            </div>
+                        </div>
+                        <div class="formField">
+                            <div class="ff_upperBand">
+                                Exam Percentage
+                            </div>
+                            <div class="ff_lowerBand">
+                                <input class="ff_lbInput" type="number" placeholder="" value="" min="0" max="100" name="examPer" id="examPer">
+                            </div>
+                        </div>
+                        <div class="formField">
+                            <div class="ff_upperBand">
+                                Coursework Percentage
+                            </div>
+                            <div class="ff_lowerBand">
+                                <input class="ff_lbInput" type="number" placeholder="" value="" min="0" max="100" name="cwPer" id="cwPer">
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+</div>
             <div class="cContents" id="module" name="contents">
 
                 <!--For specific uses-->
@@ -405,16 +570,8 @@ class module extends card{
                         
                         <div class="ccNBactionOuter" >
                             <div class="ccNBactionInner" name="actionBar">
-                                <div class="ccNBactionbut" name="add"  >
-                                    <i class="material-icons" id="centretext" style=""  name="addText">
-                                        add
-                                    </i>
-                                </div>
-                                <div class="ccNBactionbut" name="edit" >
-                                    <i class="material-icons" id="centretext" style=""  name="editText">
-                                        edit
-                                    </i>
-                                </div>
+                                
+                                
                                 
                                 
                             </div>
@@ -448,7 +605,7 @@ class module extends card{
         
         this.elements["outer"] = cardTemplate;
         
-        var temp  = ["info","titleHead","contents","add","expand","edit","nolectures","handle","addText","editText","deleteText","lecturesHeader","underline","infoIcon","expandIcon","color","colorText","colorBarInner","colorBar","titleHeadIn", "actionBar"];
+        var temp  = ["info","titleHead","contents","add","expand","edit","nolectures","handle","addText","editText","deleteText","lecturesHeader","underline","infoIcon","expandIcon","color","colorText","colorBarInner","colorBar","titleHeadIn", "actionBar","code","extraInfo"];
         for(var i = 0; i < temp.length; i++){
             this.elements[temp[i]] = this.findElementByName(cardTemplate, temp[i]);
         }
@@ -460,10 +617,10 @@ class module extends card{
             var moduleFoo = app.moduleActions[i];
             this.elements[moduleFoo.text] = new actionButton(moduleFoo.text, moduleFoo.icon, moduleFoo.action, this);
             this.elements["actionBar"].appendChild(this.elements[moduleFoo.text].button);
-            console.log(app.moduleActions[i].button);
-            console.log(this.elements["actionBar"]);
+            this.actionButtons.push(moduleFoo.text);
+            
         }
-        
+        console.log(this.elements);
         //Add colour options
         for(let i in this.colors){
             
@@ -503,6 +660,7 @@ class module extends card{
     
     display(){
         //Set colours
+        this.setFieldsEditable(this.editing);
         this.setColours();
         
         //colour menu
@@ -535,10 +693,49 @@ class module extends card{
         
         this.elements["titleHeadIn"].value = this.title;
         
+        this.elements["code"].value = this.code;
+        
         //Reconfigure max height
+        if(this.expanded == 1){
+           this.elements["contents"].style.maxHeight = this.maxHeight + "px";  
+        }else{
+            this.elements["contents"].style.maxHeight = 0 + "px";  
+        }
+        if(this.extraInformation){
+            this.elements["extraInfo"].style.maxHeight = this.maxHeight + "px"; 
+        }else{
+            this.elements["extraInfo"].style.maxHeight = 0 + "px"; 
+        }
         
-        this.elements["contents"].style.maxHeight = this.maxHeight + "px"; 
+        this.sortLectures();
+        for(var i = 0; i < this.lectures.length; i++){
+           //this.lectures[i].display();
+            this.elements["contents"].appendChild(this.lectures[i].elements["outer"]);
+        }
         
+        
+        
+    }
+    
+    
+    
+    sortLectures(){//Bubble sort but it's the correct sort bby
+        
+        var sortedLectures = this.lectures;
+        
+        for(var i = 0; i < sortedLectures.length-1; i++){
+            var swapped = false;
+            for(var j = 0; j < sortedLectures.length-1; j++){
+                if(sortedLectures[j].week > sortedLectures[j+1].week){
+                    var temp = sortedLectures[j];
+                    sortedLectures[j] = sortedLectures[j+1];
+                    sortedLectures[j+1] = temp;
+                }
+            }
+            if(!swapped){
+                break;
+            }
+        }
         
     }
 
@@ -547,12 +744,16 @@ class module extends card{
         var colorS = this.colors[this.chosenColor]["secondary"];
         var colorT = this.colors[this.chosenColor]["tertiary"];
         
+        
         //Primary
-        this.elements["handle"].style.background = colorP;
-        this.elements["contents"].style.background = colorP;
+        var temp = ["handle","contents","extraInfo"];   
+        for(var i = 0; i < temp.length; i++){
+            this.elements[temp[i]].style.background= colorP;
+
+        }
         
         //Secondary
-        var temp = ["lecturesHeader","infoIcon", "expandIcon","nolectures","titleHeadIn"];   
+        var temp = ["lecturesHeader","infoIcon", "expandIcon","nolectures","titleHeadIn","code"];   
         for(var i = 0; i < temp.length; i++){
             this.elements[temp[i]].style.color = colorS;
 
@@ -563,16 +764,24 @@ class module extends card{
         for(var i = 0; i < temp.length; i++){
             this.elements[temp[i]].style.color = colorT;
             this.elements[temp[i]].setAttribute("color", colorT);
+            
+        }
+        
+        var temp = this.actionButtons;   
+        for(var i = 0; i < temp.length; i++){
+            this.elements[temp[i]].iconEl.style.color = colorT;
+            this.elements[temp[i]].iconEl.setAttribute("color", colorT);
+            
         }
         this.elements["underline"].style.borderBottom = "1px "+colorT+" solid";
         
         
         //Button hover
-        var temp = ["add", "edit"];   
+        var temp = this.actionButtons; 
         for(var i = 0; i < temp.length; i++){
             
-            this.elements[temp[i]].addEventListener("mouseover",this.mouseIn);
-            this.elements[temp[i]].addEventListener("mouseout",this.mouseOut);
+            this.elements[temp[i]].button.addEventListener("mouseover",this.mouseIn);
+            this.elements[temp[i]].button.addEventListener("mouseout",this.mouseOut);
         }
         
     }
@@ -685,7 +894,7 @@ class lecture extends card{
         this.slideBookmark = slideBookmark;
         this.chosenColor = 0;
         this.expanded = 0;
-        
+        this.maxHeight = 0;
         //parent
         this.parentModule = module;
         
@@ -694,17 +903,26 @@ class lecture extends card{
         
         this.drawElements();
         this.display();
+        
         //console.log(this.elements);
         
         this.elements["expand"].addEventListener("click",this.toggleContents.bind(this));
         this.elements["check"].addEventListener("click", this.toggleCheck.bind(this));
         this.elements["notes"].addEventListener("blur", this.setNotes.bind(this));
+        this.elements["notes"].addEventListener("blur", this.getTimerStart.bind(this));
+        this.elements["notes"].addEventListener("focus", this.getTimerStop.bind(this));
         this.elements["bookmark"].addEventListener("blur", this.setSlide.bind(this));
+        
+        
     }
     
     calculateMaxHeight(){
-        var maxHeight = 200;
-        
+        var maxHeight;
+        if(this.expanded == 0){
+            maxHeight = 0;
+        }else{
+            maxHeight = 200;
+        }
         return maxHeight;
     }
     
@@ -756,11 +974,11 @@ class lecture extends card{
                         </div>
 
                         <div class="ch_lText">
-                            <div class="ch_lTextInner" name="week">
-                                
+                            <div class="ch_lTextInner">
+                                <input class="ch_lTextInnerInput" type="number" name="week" value="" placeholder="Week" min="0" max="30" >
                             </div>
-                            <div class="ch_mTextInner" name="title">
-                                
+                            <div class="ch_mTextInner" name="titleHead">
+                                <input class="ch_mTextInnerIn" type="text" name="title" >
                             </div>
 
                         </div>
@@ -780,6 +998,7 @@ class lecture extends card{
                     </div>  
                 </div>
             </div>
+            
             <div class="cContents" id="module" name="contents">
                             <!--For specific uses-->
                             <div class="ccNavbar">
@@ -846,12 +1065,20 @@ class lecture extends card{
         this.elements["check"].children[0].innerHTML = checkText;
         
         //Set the title
-        this.elements["title"].innerHTML = this.title;
+        this.elements["title"].value = this.title;
         
         //expanded
         var expand = this.elements["expand"];
         var expandText = "";
-        (this.expanded == 0) ? expandText = "add" : expandText = "remove";
+        if(this.expanded == 0){//Not expanded
+            expandText = "add"
+            this.getTimerStop();
+        }else{
+            expandText = "remove";
+            this.getTimerStart();
+            
+        }
+        
         expand.children[0].innerHTML = expandText;
         //colours
         this.setColours();
@@ -864,10 +1091,11 @@ class lecture extends card{
         this.elements["notes"].innerHTML = this.notes;
         
         //week
-        this.elements["week"].innerHTML = this.week;
+        this.elements["week"].value = this.week;
         
         //Set the height
         this.elements["contents"].style.maxHeight = this.maxHeight + "px"; 
+        
         
     }
     
@@ -928,6 +1156,43 @@ class lecture extends card{
                      "&bookmark=" + t.slideBookmark
                      , true);//URL
         xmlhttp.send();
+    }
+    
+    getTimerStart(){
+        this.updateTimer = setInterval(function(){this.getInformation()}.bind(this), 60 * 1000); 
+    }
+    
+    getTimerStop(){
+        clearInterval(this.updateTimer); 
+    }
+    
+    getInformation(){
+        
+        var t = this;
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if(this.readyState == 4 && this.status == 200) {
+                //console.log(this.responseText);
+                
+                var myArr = JSON.parse(this.responseText);//Parses API json into key-value pairs
+
+                if( myArr != null && myArr.length > 0){//If data exists
+
+
+                    t.completed = myArr[0]['completed'];
+                    t.notes = myArr[0]['notes'];
+                    t.bookmark = myArr[0]['slideBookmark'];
+                    t.display();
+                    console.log("Displayed");
+                    
+                }else{//Data doesn't exist
+
+                }
+            }
+        };
+        xmlhttp.open("POST", "http://localhost/lecRev2/lecture/getLectureByID.php?lectureID=" + t.lectID, true);//URL
+        xmlhttp.send();
+        
     }
 }
 

@@ -1,0 +1,118 @@
+ 
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div class="backgroundViewer"></div>
+        <div class="pageViewer">
+            <div class="viewerCard">
+            <!--<form action="http://localhost/lecRev/module/addModule.php" id="viewerForm" method="get" target="_parent">-->
+            
+                <div class="topbar" >
+                    <div class="tb_outer" id="tb_viewer">
+                        
+                        <div class="tb_sText">
+                            <div class="tb_sTextInner">
+                                
+                                <div class="tb_Submit" onclick="
+                                                                sendMessage(`{
+                                                                    'message':{
+                                                                     'from' : 'newLecture',
+                                                                     'about' : 'close'
+                                                                    }
+                                                                }`)"
+                                     >
+                                    <i class="material-icons" style="line-height: 40px" >
+                                        keyboard_arrow_down
+                                    </i>
+                                </div>      
+                                
+                            </div>
+                        </div>
+
+                        <div class="tb_mText">
+                            <div class="tb_mTextInner">
+                                
+                                <div class="tb_mTextUp">
+                                    New Lecture
+                                </div>
+                                <div class="tb_mTextDown">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tb_sText">
+                            <div class="tb_sTextInner">
+                                <div class="tb_Submit" onclick="submitForm_lecture('new')" id="submitter">
+                                    <i class="material-icons" style="line-height: 40px" >
+                                        done
+                                    </i>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="pageContents" id="pc">
+                    <div class="formOuter">
+                        <div class="formInner">
+
+                            <div class="formField">
+                                <div class="ff_upperBand">
+                                    Module
+                                </div>
+                                <div class="ff_lowerBand">
+                                    <select id="modules" class="ff_lbInput" name="module_code">
+
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="formField">
+                                <div class="ff_upperBand">
+                                    Title
+                                </div>
+                                <div class="ff_lowerBand">
+                                    <input class="ff_lbInput" type="text" placeholder="" value="" name="title">
+                                </div>
+                            </div>
+                            <div class="formField">
+                                <div class="ff_upperBand">
+                                    Week
+                                </div>
+                                <div class="ff_lowerBand">
+                                    <input class="ff_lbInput" type="number" placeholder="" value="" min="0" max="40" name="week">
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            <!--</form>-->
+            </div>
+        </div>
+        
+    </body>
+
+    
+    <link rel="stylesheet" type="text/css" href="./styles/menu.css">
+    <link rel="stylesheet" type="text/css" href="./styles/viewer.css">
+    
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="scripts/viewer.js"></script>
+   
+    <script src="scripts/viewerFrameChild.js"></script>
+    <script>sendMessage(sendMessage(`{
+                                        'message':{
+                                         'from' : 'newLecture',
+                                         'about' : 'created'
+                                        }
+                                    }`);
+        setModuleList();
+</script>
+</html>

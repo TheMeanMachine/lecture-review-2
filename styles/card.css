@@ -6,6 +6,12 @@
     
 }
 
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 .cHandle{
     height: 80px;
     width: 100%;
@@ -35,30 +41,34 @@
     transition: max-height ease-in-out 1s;
 }
 
+
+
+
 .ch_lText{
-    width: calc(100% - 80px - 50px);
+    width: calc(100% - 66px - 66px);
     height: 100%;
     overflow: hidden;
-    
+    display: grid;
+    grid-template-columns: 100%;
     float: left;
+    
 }
 
 .ch_lCheck{
     float: left;
-    width: 50px;
-    margin-right: 10px;
+    width: 66px;
     height: 100%;
 
     line-height: 80px;
 }
 
 .ch_lCheckbox{
-    height: 20px;
-    width: 20px;
-    margin: 23px 15px 23px 15px;
+    height: 24px;
+    width: 24px;
+    margin: 19px 19px 19px 19px;
 
     border-radius: 100%;
-    text-align: center;
+    
 
 }
 
@@ -70,6 +80,7 @@
     border-radius: 100%;
     text-align: center;
     user-select: none;
+    
 }
 
 .ch_rExpand{
@@ -81,33 +92,69 @@
 }
 
 .ch_lTextInner{
+    display: flex;
     height: 100%;
     width: auto;
     line-height: calc(80px - 14px);
     text-align: left;
-    margin: 0 auto;
+    
     font-size: 1.2em;
     float: left;
+    
+}
+
+.ch_lTextInnerInput{
+    height: 100%;
+    background: transparent;
+    
+    width: 100%;
+    font-size: 1.3em;
+    text-align: center;
+    margin: 0 0px auto;
+    border: 0;
+    color: black;
+    
+}
+
+.ch_lTextInnerInput:focus{
+    outline: 0;
 }
 
 .ch_mTextInner{
+
     height: 100%;
-    width: auto;
+    width: 100%;
     line-height: calc(80px - 14px);
     text-align: center;
     margin: 0 auto;
     font-size: 1.2em;
     border: 0;
     outline-width: 0;
+    
+}
+
+.ch_mTextInput{
+    position: relative;
+    height: inherit;
+    color: black;
+    width: inherit;
+    font-size: 1em;
+    text-align: center;
+    margin: 0 0px auto;
+    border: 0;
+    padding: 0;
+    text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
 }
 
 .ch_mTextInnerIn{
     height: 100%;
-    width: auto;
+    width: 100%;
     line-height: calc(80px - 14px);
     text-align: center;
     margin: 0 auto;
-    font-size: 1.2em;
+    font-size: 1em;
     border: 0;
     outline-width: 0;
     background-color: transparent;
@@ -299,4 +346,62 @@
     
     border-radius: 100%;
     
+}
+
+.cInfo{
+    height: auto;
+    width: 100%;
+}
+
+
+
+
+.formField{
+    height: auto;
+    margin: 10px 0px;
+
+}
+
+.ff_upperBand{
+    height: 15px;
+    padding: 5px;
+    line-height: 15px;
+    font-size: 1em;
+    color: #7F838C;
+}
+
+.ff_lowerBand{
+    padding: 5px;
+}
+
+.ff_lbInput{
+    outline-width: 0;
+    width: 100%;
+    height: auto;
+    min-height: 25px;
+    background: transparent;
+    border: 1px solid #7F838C;
+}
+
+.ff_lbInput:focus{
+    
+    border: 1px solid #4384F4 ;
+}
+
+.fiTitle{
+    text-align: center;
+    color: black;
+}
+
+.ff_TextNotes{
+    height: 100px;
+    width: 100%;
+    resize: none;
+    border: #7F838C solid 1px;
+}
+
+
+.ff_TextNotes:focus{
+    outline: 0;
+    border: 1px solid #4384F4 ;
 }
