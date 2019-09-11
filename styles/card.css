@@ -130,7 +130,8 @@ input[type=number]::-webkit-outer-spin-button {
     font-size: 1.2em;
     border: 0;
     outline-width: 0;
-    
+    text-overflow: ellipsis;
+    word-break: break-all;
 }
 
 .ch_mTextInput{
@@ -159,7 +160,8 @@ input[type=number]::-webkit-outer-spin-button {
     outline-width: 0;
     background-color: transparent;
     border: 0;
-    
+    text-overflow: ellipsis;
+    word-break: break-all;
 }
 
 .ch_rExpandInner{
@@ -214,7 +216,7 @@ input[type=number]::-webkit-outer-spin-button {
     
    
     
-    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    transition: all 0.5s cubic-bezier(.25,.8,.25,1);
 }
 
 .ccNBactionbut:hover {
@@ -253,6 +255,10 @@ input[type=number]::-webkit-outer-spin-button {
 }
 .ccNBbookmark:focus{
     outline: 0;
+}
+
+.matIcon{
+    transition: font-size ease-in-out 0.3s;
 }
 
 .ccTextNotesOuter{
@@ -358,34 +364,44 @@ input[type=number]::-webkit-outer-spin-button {
 
 .formField{
     height: auto;
-    margin: 10px 0px;
-
+    margin: 10px 20px;
+    text-align: left;
+    max-width: 400px;
+    margin: 10px auto;
+    padding: 0px 20px 0px 20px;
+    text-overflow: ellipsis;
+    word-break: break-all;
 }
 
 .ff_upperBand{
-    height: 15px;
-    padding: 5px;
-    line-height: 15px;
-    font-size: 1em;
-    color: #7F838C;
+    height: 12px;
+    padding: 2px;
+    line-height: 12px;
+    font-size: 0.8em;
+    color: black;
+    
 }
 
 .ff_lowerBand{
-    padding: 5px;
+    padding: 1px;
 }
 
 .ff_lbInput{
-    outline-width: 0;
+   color: black;
+    outline: none;
+    border: 0px solid transparent;
     width: 100%;
     height: auto;
     min-height: 25px;
     background: transparent;
-    border: 1px solid #7F838C;
+    text-overflow: ellipsis;
+    word-break: break-all;
 }
 
 .ff_lbInput:focus{
     
     border: 1px solid #4384F4 ;
+    
 }
 
 .fiTitle{
