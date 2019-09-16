@@ -128,12 +128,12 @@ class myApp{
         /* Modules */ 
         this.addModuleAction("add", "add", function(){
             var parent = this.parent;
-            parent.lectures.push(new lecture("",
-                                                             "",
+            parent.lectures.push(new lecture(null,
+                                                             null,
                                                              1,
-                                                             "",
-                                                             "0",
-                                                             "0",
+                                                             null,
+                                                             null,
+                                                             "undefined",
                                                              parent));
             parent.maxHeight = parent.calculateMaxHeight();
             parent.display();
@@ -141,7 +141,11 @@ class myApp{
         
         this.addModuleAction("edit", "edit", function(){
             var parent = this.parent;
-            parent.toggleEditable();
+            if(app.editing && app.editingObject.data["modID"] == parent.data["modID"]){
+                parent.stopEditingCurrentObject(true);
+            }else{
+                parent.toggleEditable();
+            }
         },false);
         
         this.addModuleAction("undo", "undo", function(){
@@ -158,7 +162,12 @@ class myApp{
         
         this.addLectureAction("edit", "edit", function(){
             var parent = this.parent;
-            parent.toggleEditable();
+            if(app.editing && app.editingObject.data["lectID"] == parent.data["lectID"]){
+                parent.stopEditingCurrentObject(true);
+            }else{
+                parent.toggleEditable();
+            }
+            
             
         },false);
         

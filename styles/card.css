@@ -371,6 +371,7 @@ input[type=number]::-webkit-outer-spin-button {
     padding: 0px 20px 0px 20px;
     text-overflow: ellipsis;
     word-break: break-all;
+    
 }
 
 .ff_upperBand{
@@ -387,7 +388,7 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 .ff_lbInput{
-   color: black;
+    color: black;
     outline: none;
     border: 0px solid transparent;
     width: 100%;
@@ -410,10 +411,17 @@ input[type=number]::-webkit-outer-spin-button {
 }
 
 .ff_TextNotes{
-    height: 100px;
+    height: 50px;
     width: 100%;
     resize: none;
-    border: #7F838C solid 1px;
+    border: 0px;
+    
+    color: black;
+    outline: none;
+    border: 0px solid transparent;
+    background: transparent;
+    text-overflow: ellipsis;
+    word-break: break-all;
 }
 
 

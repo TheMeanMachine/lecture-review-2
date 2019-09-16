@@ -1,38 +1,59 @@
 class lecture extends card{
     constructor(title,week,completed,notes,slideBookmark,lectureID,module){
         super();
+        this.data = {};
+        this.data["lectID"] = lectureID;
+//console.log(this.data["lectID"]);
         //details
-        this.week = week;
-        this.title = title;
-        this.lectID = lectureID;
-        this.completed = completed;
-        this.notes = notes;
-        this.slideBookmark = slideBookmark;
+        this.data["week"] = week;
+        this.data["title"] = title;
+
+        this.data["completed"] = completed;
+        this.data["notes"] = notes;
+        this.data["slideBookmark"] = slideBookmark;
+        this.parentModule = module;
+        
+        //elements
+        this.elements = {};
+        this.actionButtons = [];
+
         this.chosenColor = 0;
         this.expanded = 0;
         this.maxHeight = 0;
         //parent
-        this.parentModule = module;
         this.editing = false;
-        //elements
-        this.elements = {};
-        this.actionButtons = [];
         
         this.drawElements();
+        
+        //console.log(lectureID);
+        if(lectureID == null || lectureID == "undefined"){
+            
+            this.makeNewLecture();
+            this.updateInformation();
+          
+        }else{
+            
+            
+          
+            
+            
+        }
+        
+        
         this.display();
-        
-        //console.log(this.elements);
-        
+
         this.elements["expand"].addEventListener("click",this.toggleContents.bind(this));
         this.elements["check"].addEventListener("click", this.toggleCheck.bind(this));
-        this.elements["notes"].addEventListener("blur", this.setNotes.bind(this));
+        this.elements["notes"].addEventListener("blur", this.updateInformation.bind(this));
         this.elements["notes"].addEventListener("blur", this.getTimerStart.bind(this));
         this.elements["notes"].addEventListener("focus", this.getTimerStop.bind(this));
-        this.elements["bookmark"].addEventListener("blur", this.setSlide.bind(this));
-        
-        
+        this.elements["bookmark"].addEventListener("blur", this.updateInformation.bind(this));
     }
     
+    continueSetup(){
+        
+    }
+        
     calculateMaxHeight(){
         var maxHeight;
         if(this.expanded == 0){
@@ -65,7 +86,7 @@ class lecture extends card{
                     }
                 }
             };
-            xmlhttp.open("GET", "http://localhost/lecRev2/lecture/removeLecture.php?id=" + t.lectID, true);//URL
+            xmlhttp.open("GET", "http://localhost/lecRev2/lecture/removeLecture.php?id=" + t.data["lectID"], true);//URL
             xmlhttp.send();
 
 
@@ -95,7 +116,7 @@ class lecture extends card{
                                 <input class="ch_lTextInnerInput" type="number" name="week" value="" placeholder="Week" min="0" max="30" >
                             </div>
                             <div class="ch_mTextInner" name="titleHead">
-                                <input class="ch_mTextInnerIn" type="text" name="title" >
+                                <input class="ch_mTextInnerIn" type="text" name="title" placeholder="Title">
                             </div>
 
                         </div>
@@ -176,17 +197,20 @@ class lecture extends card{
     }
     
     display(){
+        
+        //console.log("Lecture: Running display for " + this.data["title"]);
+        
         this.setFieldsEditable(this.editing);
         
         //Set the checkbox
         var checkText;
-        (this.completed == 1) ? checkText = "check_box_outline_blank" : checkText = "check_box";
+        (this.data["completed"] == 1) ? checkText = "check_box_outline_blank" : checkText = "check_box";
         //console.log();
         this.elements["check"].children[0].innerHTML = checkText;
         
         //Set the title
-        this.elements["title"].value = this.title;
-        this.elements["title"].setAttribute("title", this.title);
+        this.elements["title"].value = this.data["title"];
+        this.elements["title"].setAttribute("title", this.data["title"]);
         
         //expanded
         var expand = this.elements["expand"];
@@ -204,16 +228,16 @@ class lecture extends card{
         //colours
         this.setColours();
         
-        console.log("Lecture: Running display for " + this.title);
+        
         
         //bookmark
-        this.elements["bookmark"].value = this.slideBookmark;
+        this.elements["bookmark"].value = this.data["slideBookmark"];
 
         //notes
-        this.elements["notes"].innerHTML = this.notes;
+        this.elements["notes"].innerHTML = this.data["notes"];
         
         //week
-        this.elements["week"].value = this.week;
+        this.elements["week"].value = this.data["week"];
         
         //Set the height
         this.elements["contents"].style.maxHeight = this.maxHeight + "px"; 
@@ -229,36 +253,26 @@ class lecture extends card{
     
     toggleCheck(){
 
-        if(this.completed == 1){
-            this.completed = 2;
+        if(this.data["completed"] == 1){
+            this.data["completed"] = 2;
         }else{
-            this.completed = 1;
+            this.data["completed"] = 1;
         }
-        /*var xmlhttp = new XMLHttpRequest();
-        xmlhttp.open("GET", "http://localhost/lecRev2/lecture/updateLectureInformation.php?"+
-                     "lectureID=" + this.lectID +
-                     "&complete=" + this.completed
-                     , true);
-        xmlhttp.send();*/
+
         
         this.updateInformation();
         
         this.display();
     }
     
-    setSlide(){
-        this.slideBookmark = this.elements["bookmark"].value;
-        this.updateInformation();
-    }
-    
-    setNotes(){
-        this.notes = this.elements["notes"].value;
-        this.updateInformation();
-    }
+   
     
     //Updates the information for lecture
     updateInformation(){
         var t = this;
+        
+        this.data["notes"] = this.elements["notes"].value;
+        this.data["slideBookmark"] = this.elements["bookmark"].value;
         
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
@@ -272,12 +286,12 @@ class lecture extends card{
             }
         };
         xmlhttp.open("GET", "http://localhost/lecRev2/lecture/updateLectureInformation.php?"+
-                     "lectureID="+ t.lectID +
-                     "&complete=" + t.completed +
-                     "&notes=" + t.notes +
-                     "&bookmark=" + t.slideBookmark +
-                     "&title=" + t.title +
-                     "&week=" + t.week
+                     "lectureID="+ t.data["lectID"] +
+                     "&complete=" + t.data["completed"] +
+                     "&notes=" + t.data["notes"] +
+                     "&bookmark=" + t.data["slideBookmark"] +
+                     "&title=" + t.data["title"] +
+                     "&week=" + t.data["week"]
                      , true);//URL
         xmlhttp.send();
     }
@@ -292,6 +306,12 @@ class lecture extends card{
     
     getInformation(){
         
+        /*this.data["title"] = title;
+        this.data["lectID"] = lectureID;
+        this.data["completed"] = completed;
+        this.data["notes"] = notes;
+        this.data["slideBookmark"] = slideBookmark;
+        */
         var t = this;
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
@@ -301,21 +321,74 @@ class lecture extends card{
                 var myArr = JSON.parse(this.responseText);//Parses API json into key-value pairs
 
                 if( myArr != null && myArr.length > 0){//If data exists
-
-
-                    t.completed = myArr[0]['completed'];
-                    t.notes = myArr[0]['notes'];
-                    t.bookmark = myArr[0]['slideBookmark'];
+                    t.data["lectID"] = myArr[0]['id']
+                    t.data["title"] = myArr[0]['title'];
+                    t.data["week"] = myArr[0]['week'];
+                    t.data["completed"] = myArr[0]['completed'];
+                    t.data["notes"] = myArr[0]['notes'];
+                    t.data["slideBookmark"] = myArr[0]['slideBookmark'];
                     t.display();
                     console.log("Displayed");
+                }else{//Data doesn't exist
+
+                }
+            }
+        };
+        xmlhttp.open("POST", "http://localhost/lecRev2/lecture/getLectureByID.php?lectureID=" + t.data["lectID"], true);//URL
+        xmlhttp.send();
+        
+    }
+    
+    updateInformation(){
+        var t = this;
+        
+        this.data["week"] = this.elements["week"].value;
+        this.data["title"] = this.elements["title"].value;
+        this.data["notes"] = this.elements["notes"].value;
+        this.data["slideBookmark"] = this.elements["bookmark"].value;
+        
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if(this.readyState == 4 && this.status == 200) {
+                //console.log(this.responseText);
+                if(this.responseText.length <= 0){//If data exists
+
+                }else{
+                    console.log(this.responseText);
+                    openToast("Something went wrong - try again later");
+                }
+            }
+        };
+        xmlhttp.open("GET", "http://localhost/lecRev2/lecture/updateLectureInformation.php?"+
+                     "&week=" + t.data["week"] +
+                     "&complete=" + t.data["completed"] +
+                     "&title=" + t.data["title"] +
+                     "&notes=" + t.data["notes"] +
+                     "&lectureID=" + t.data["lectID"] +
+                     "&bookmark=" + t.data["slideBookmark"], true);//URL
+        xmlhttp.send();
+    }
+    
+    makeNewLecture(){
+        var t = this;
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if(this.readyState == 4 && this.status == 200) {
+
+                if(this.responseText.length > 0){//If data exists
+                    t.data["lectID"] = parseInt(this.responseText);
+                    console.log(t.data["lectID"]);
+
+                    //t.getInformation();
+                    //t.continueSetup();
                     
                 }else{//Data doesn't exist
 
                 }
             }
         };
-        xmlhttp.open("POST", "http://localhost/lecRev2/lecture/getLectureByID.php?lectureID=" + t.lectID, true);//URL
+
+        xmlhttp.open("POST", "http://localhost/lecRev2/lecture/addLecture.php?module=" + t.parentModule.data["modID"], true);//URL
         xmlhttp.send();
-        
     }
 }

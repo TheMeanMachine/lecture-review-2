@@ -3,16 +3,16 @@ class module extends card{
         super();
         //details
         
-        this.modID = modID;
-        this.title = title;
-        this.code = code;
+        /*this.data["modID"] = modID;
+        this.data["title"] = title;
+        this.data["code"] = code;
         this.semester = semester;
         this.year = year;
         this.desc = desc;
         this.leader = leader;
-        this.credits = credits;
+        this.data["credits"] = credits;
         this.examPer = examPer;
-        this.cwPer = cwPer;
+        this.cwPer = cwPer;*/
         this.data = {};
         this.data["modID"] = modID;
         this.data["title"] = title;
@@ -79,7 +79,9 @@ class module extends card{
         }
         (this.colorsOpen) ? this.maxHeight += 80 : null;
         if(this.extraInformation == 1){
-            maxHeight += 10;
+            
+            maxHeight += Object.keys(this.elements["extraInformationElements"]).length * 30;
+                
         }
         
         
@@ -131,7 +133,7 @@ class module extends card{
                 }
             }
         };
-        xmlhttp.open("POST", "http://localhost/lecRev2/lecture/getLecture.php?moduleID=" + t.modID, true);//URL
+        xmlhttp.open("POST", "http://localhost/lecRev2/lecture/getLecture.php?moduleID=" + t.data["modID"], true);//URL
         xmlhttp.send();
         
     }
@@ -180,6 +182,22 @@ class module extends card{
             <div class="cInfo cContents" name="extraInfo">
                 <div class="formOuter">
                         <div class="formInner">
+                            <div class="formField">
+                                <div class="ff_upperBand">
+                                    Description
+                                </div>
+                                <div class="ff_lowerBand">
+                                    <textarea class="ff_TextNotes" placeholder="" style="background: transparent" name="desc" value="" id="desc"></textarea>
+                                </div>
+                            </div>
+                            <div class="formField">
+                                <div class="ff_upperBand">
+                                    Leader
+                                </div>
+                                <div class="ff_lowerBand">
+                                    <input class="ff_lbInput" type="text" placeholder="" value="" name="leader" id="leader">
+                                </div>
+                            </div>
                             <div class="formField" >
                                 <div class="ff_upperBand">
                                     Credits
@@ -204,6 +222,7 @@ class module extends card{
                                     <input class="ff_lbInput" type="number" placeholder="" value="" min="0" max="100" name="cwPer" id="cwPer">
                                 </div>
                             </div>
+
 
                         </div>
                     </div>
@@ -258,7 +277,7 @@ class module extends card{
         }
         
         this.elements["extraInformationElements"] = {};
-        var temp = ["credits","cwPer","examPer"];
+        var temp = ["credits","cwPer","examPer","desc","leader"];
         for(var i = 0; i < temp.length; i++){
             this.elements["extraInformationElements"][temp[i]] = this.findElementByName(cardTemplate, temp[i]);
         }
@@ -274,7 +293,7 @@ class module extends card{
             this.actionButtons.push(moduleFoo.text);
             
         }
-        console.log(this.elements);
+        //console.log(this.elements);
         //Add colour options
         for(let i in this.colors){
             
@@ -313,7 +332,7 @@ class module extends card{
     }
     
     display(){
-        console.log("Module: Running display for " + this.title);
+        //console.log("Module: Running display for " + this.data["title"]);
         //Set colours
         this.setFieldsEditable(this.editing);
         this.setColours();
@@ -343,13 +362,17 @@ class module extends card{
         (this.expanded == 0) ? expandText = "add" : expandText = "remove";
         expand.children[0].innerHTML = expandText;
         
-        this.elements["titleHeadIn"].value = this.title;
-        this.elements["titleHeadIn"].setAttribute("title", this.title);
-        console.log(this.title);
-        this.elements["code"].value = this.code;
+        this.elements["titleHeadIn"].value = this.data["title"];
+        this.elements["titleHeadIn"].setAttribute("title", this.data["title"]);
+        
+        this.elements["code"].value = this.data["code"];
         
         var extraInformation = this.elements["extraInformationElements"];
-        extraInformation["credits"].value = this.credits; 
+        var keys = Object.keys(extraInformation);
+        for(var i = 0; i < keys.length; i++){
+            extraInformation[keys[i]].value = this.data[keys[i]]; 
+        }
+        
         //Reconfigure max height
         if(this.expanded == 1){
            this.elements["contents"].style.maxHeight = this.maxHeight + "px";  
@@ -411,8 +434,15 @@ class module extends card{
         var temp = ["lecturesHeader","infoIcon", "expandIcon","nolectures","titleHeadIn","code"];   
         for(var i = 0; i < temp.length; i++){
             this.elements[temp[i]].style.color = colorS;
-
+            
         }
+        var temp = Object.keys(this.elements["extraInformationElements"]);
+        for(var i = 0; i < temp.length; i++){
+            var currentElement = this.elements["extraInformationElements"][temp[i]];
+            currentElement.style.color = colorS;
+            currentElement.parentNode.parentNode.children[0].style.color = colorS;
+        }
+        
 
         //Tertiary
         var temp = ["addText", "editText", "colorText", "lecturesHeader","nolectures"];   
@@ -421,6 +451,8 @@ class module extends card{
             this.elements[temp[i]].setAttribute("color", colorT);
             
         }
+        
+        
         
         var temp = this.actionButtons;   
         for(var i = 0; i < temp.length; i++){
@@ -443,7 +475,7 @@ class module extends card{
     }
     
     setTitle(){
-        this.title = this.elements["titleHeadIn"].value;
+        this.data["title"] = this.elements["titleHeadIn"].value;
         this.updateModule();
         this.display();
     }
@@ -485,9 +517,15 @@ class module extends card{
     updateInformation(){
         var t = this;
         
-        t.title = t.elements["titleHeadIn"].value;
-        t.code = t.elements["code"].value;
-        t.desc = t.elements[""]
+        t.data["title"] = t.elements["titleHeadIn"].value;
+        t.data["code"] = t.elements["code"].value;
+        t.data["desc"] = t.elements[""]
+
+        t.data["desc"] =  t.elements["extraInformationElements"]["desc"].value;;
+        t.data["leader"] = t.elements["extraInformationElements"]["leader"].value;
+        t.data["credits"] =  t.elements["extraInformationElements"]["credits"].value;
+        t.data["examPer"] =  t.elements["extraInformationElements"]["examPer"].value;;
+        t.data["cwPer"] =  t.elements["extraInformationElements"]["cwPer"].value;;
         
         var xmlhttp = new XMLHttpRequest();
         xmlhttp.onreadystatechange = function() {
@@ -502,15 +540,15 @@ class module extends card{
             }
         };
         xmlhttp.open("GET", "http://localhost/lecRev2/module/updateModuleInformation.php?"+
-                     "moduleID="+ t.modID +
-                     "&desc=" + t.desc +
-                     "&leader=" + t.leader +
-                     "&credits=" + t.credits +
-                     "&examPer=" + t.examPer +
-                     "&cwPer=" + t.cwPer +
+                     "moduleID="+ t.data["modID"] +
+                     "&desc=" + t.data["desc"] +
+                     "&leader=" + t.data["leader"] +
+                     "&credits=" + t.data["credits"] +
+                     "&examPer=" + t.data["examPer"] +
+                     "&cwPer=" + t.data["cwPer"] +
                      "&color=" + t.chosenColor +
-                     "&title=" + t.title +
-                     "&code=" + t.code, true);//URL
+                     "&title=" + t.data["title"] +
+                     "&code=" + t.data["code"], true);//URL
         xmlhttp.send();
 
     }

@@ -94,26 +94,17 @@ this.maxHeight = this.calculateMaxHeight();
     toggleEditable(override){
         if(app.editingObject != null && this.title == app.editingObject.title){
             //save
-            confirmThis("Save?", "Do you want to save your changes?", "CANCEL", "CONFIRM",
+            confirmThis("Are you sure?", "You will lose all current changes", "CANCEL", "OKAY",
                 function(){
-                    this.stopEditingCurrentObject(true);
-
+                    this.stopEditingCurrentObject(false);
+                    this.toggleEditable();
                 }.bind(this),
                 function(){
                 }.bind(this));
             return;
-        }
-        if((override == null || override == "undefined") && app.editing){
-                confirmThis("Are you sure?", "You're currently editing and this will remove all changes you've made", "CANCEL", "CONFIRM",
-                function(){
-                    this.stopEditingCurrentObject(false);
-                    this.toggleEditable(true);
-
-                }.bind(this),
-                function(){
-                }.bind(this));
         }else{
             console.log("toggleEditable: app is overriden or not editing");
+            console.log(app.editing);
             app.editing = true;
             this.editing = true;
             
@@ -130,40 +121,83 @@ this.maxHeight = this.calculateMaxHeight();
     
     stopEditingCurrentObject(save){
         var t = app.editingObject;
+        console.log(save);
         if(save){
-            t.updateInformation();
+            confirmThis("Saving", "Do you want to save?", "CANCEL", "OKAY",
+                function(){
+                    t.updateInformation();
+                    t.stopEditingCurrentObject();
+                }.bind(this),
+                function(){
+                    
+                }.bind(this));
             
+            return;
+        }else{
+            t.display();
+        
+            t.setFieldsEditable(false);
+
+            var editButtonIcon = t.findElementByName(t.elements["actionBar"], "editText");
+            editButtonIcon.innerHTML = "edit";
+            t.elements["undo"].hide();
+            t.editing = false;
+
+            app.editingObject = null;
+            app.editing = false;
         }
         
         
-        
-        t.setFieldsEditable(false);
-        
-        var editButtonIcon = t.findElementByName(t.elements["actionBar"], "editText");
-        editButtonIcon.innerHTML = "edit";
-        t.elements["undo"].hide();
-        t.editing = false;
-        
-        app.editingObject = null;
-        app.editing = false;
     }
     
     setFieldsEditable(editable){
         
-        var temp = ["titleHeadIn","code","week","title"];   
+        var temp = ["titleHeadIn","code","week","title"];
+        
+        
         for(var i = 0; i < temp.length; i++){
             if(this.elements[temp[i]] != "undefined" && this.elements[temp[i]] != null ){
                 if(!editable){
-                    this.elements[temp[i]].setAttribute("readonly", "true");
-                
+                    try{
+                        this.elements[temp[i]].setAttribute("readonly", "true");
+                        this.elements[temp[i]].setAttribute("disabled", "true"); 
+                        
+                    }catch(e){
+                        
+                    }
+                    
                 }else{
                     if(this.elements[temp[i]].hasAttribute("readonly")){
                        this.elements[temp[i]].removeAttribute("readonly"); 
+                       this.elements[temp[i]].removeAttribute("disabled"); 
+                    }
+                }
+            }
+            
+            
+        }
+        try{
+            
+            var extraInfoTag = "extraInformationElements";
+         
+            temp = Object.keys(this.elements[extraInfoTag]);
+            for(var i = 0; i < temp.length; i++){
+            if(this.elements[extraInfoTag][temp[i]] != "undefined" && this.elements[extraInfoTag][temp[i]] != null ){
+                if(!editable){
+                        this.elements[extraInfoTag][temp[i]].setAttribute("readonly", "readonly");  
+                        this.elements[extraInfoTag][temp[i]].setAttribute("disabled", "true"); 
+                }else{
+                    if(this.elements[extraInfoTag][temp[i]].hasAttribute("readonly")){
+                        this.elements[extraInfoTag][temp[i]].removeAttribute("readonly"); 
+                        this.elements[extraInfoTag][temp[i]].removeAttribute("disabled"); 
                     }
 
                 }
             }
             
+            
+        }
+        }catch(e){
             
         }
         

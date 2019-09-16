@@ -1,6 +1,5 @@
 class colorSelector{
     constructor(){
-        console.log("hello");
         //not consistent - will have to add it in second iteration
         /*app.addModuleAction("color", "color_lens", function(){
             this.parent.toggleColorChoice();
