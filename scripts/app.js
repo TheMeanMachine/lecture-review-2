@@ -128,7 +128,7 @@ class myApp{
         /* Modules */ 
         this.addModuleAction("add", "add", function(){
             var parent = this.parent;
-            parent.lectures.push(new lecture(null,
+            parent.lectures.unshift(new lecture(null,
                                                              null,
                                                              1,
                                                              null,
@@ -141,7 +141,7 @@ class myApp{
         
         this.addModuleAction("edit", "edit", function(){
             var parent = this.parent;
-            if(app.editing && app.editingObject.data["modID"] == parent.data["modID"]){
+            if(app.editing && app.editingObject.data["ID"] == parent.data["ID"]){
                 parent.stopEditingCurrentObject(true);
             }else{
                 parent.toggleEditable();
@@ -162,8 +162,10 @@ class myApp{
         
         this.addLectureAction("edit", "edit", function(){
             var parent = this.parent;
-            if(app.editing && app.editingObject.data["lectID"] == parent.data["lectID"]){
+            
+            if(app.editing && app.editingObject.data["ID"] == parent.data["ID"]){
                 parent.stopEditingCurrentObject(true);
+                
             }else{
                 parent.toggleEditable();
             }
@@ -180,6 +182,7 @@ class myApp{
         
         this.addLectureAction("delete", "delete", function(){
             console.log("delete");
+            this.parent.delete();
         },false);
         
     }
@@ -273,37 +276,33 @@ class myApp{
     }
     
     loadPlugins(){
-        this.importPlugin("card");
         this.importPlugin("colorSelector");
         this.importPlugin("lecture");
         this.importPlugin("module");
-        
     }
     
     importPlugin(pluginName){
         //document.writeln("<script type='text/javascript' src='/plugins/"+pluginName+".js'></script>");
-        $.getScript('/plugins/'+pluginName+'.js');
+        try{
+            $.getScript('/plugins/'+pluginName+'.js');  
+        }catch(e){
+            this.loadPlugins();
+        }
+        
         
     
     }
 }
 
-
-
-//==============================================================
-
-
-//################################################################################
-//################################################################################
-//################################################################################Just so I notice I scrolled too far
-//################################################################################
-
-
-
-
 var app = new myApp();
 
 
-
+function randomInspiration(){
+    var inspirations = [
+        "Smile! Dianabasi loves you!", "At least you'll be dead ONE day...", "Oh... inspiration... come back another day. You're terrible today", "If you try to fail, and succeed, which have you done?", "People say nothing is impossible, but I do nothing every day... just like you now :)", "Even if you are on the right track, you’ll get run over if you just sit there.", "A diamond is merely a lump of coal that did well under pressure.", "If you hit the target every time it’s too near or too big.", "I didn’t fail the test. I just found 100 ways to do it wrong. (Hazar)" 
+    ];
+    var number = Math.floor(Math.random() * inspirations.length); 
+    openToast(inspirations[number]);
+}
 
 

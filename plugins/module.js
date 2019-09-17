@@ -1,20 +1,9 @@
 class module extends card{
-    constructor(modID,title,code,semester,year,desc,leader,credits,examPer,cwPer, color){
+    constructor(ID,title,code,semester,year,desc,leader,credits,examPer,cwPer, color){
         super();
         //details
-        
-        /*this.data["modID"] = modID;
-        this.data["title"] = title;
-        this.data["code"] = code;
-        this.semester = semester;
-        this.year = year;
-        this.desc = desc;
-        this.leader = leader;
-        this.data["credits"] = credits;
-        this.examPer = examPer;
-        this.cwPer = cwPer;*/
         this.data = {};
-        this.data["modID"] = modID;
+        this.data["ID"] = ID;
         this.data["title"] = title;
         this.data["code"] = code;
         this.data["semester"] = semester;
@@ -112,7 +101,7 @@ class module extends card{
                         
                         var flag = true;
                         for(var j = 0; j < t.lectures.length; j++){
-                            if(t.lectures[j].lectID == lectureID){
+                            if(t.lectures[j].data["ID"] == lectureID){
                                 flag = false;
                             }
                         }
@@ -133,7 +122,7 @@ class module extends card{
                 }
             }
         };
-        xmlhttp.open("POST", "http://localhost/lecRev2/lecture/getLecture.php?moduleID=" + t.data["modID"], true);//URL
+        xmlhttp.open("POST", "http://localhost/lecRev2/lecture/getLecture.php?moduleID=" + t.data["ID"], true);//URL
         xmlhttp.send();
         
     }
@@ -350,7 +339,7 @@ class module extends card{
         }
         
         var noLecture = this.elements["nolectures"];
-        if(this.lectures.length >0){
+        if(this.lectures.length > 0){
             noLecture.style.display = "none";
         }else{
             noLecture.style.display = "";
@@ -385,11 +374,10 @@ class module extends card{
             this.elements["extraInfo"].style.maxHeight = 0 + "px"; 
         }
         
+        
         this.sortLectures();
-        for(var i = 0; i < this.lectures.length; i++){
-           //this.lectures[i].display();
-            this.elements["contents"].appendChild(this.lectures[i].elements["outer"]);
-        }
+        
+       
         
         
         
@@ -404,15 +392,19 @@ class module extends card{
         for(var i = 0; i < sortedLectures.length-1; i++){
             var swapped = false;
             for(var j = 0; j < sortedLectures.length-1; j++){
-                if(sortedLectures[j].week > sortedLectures[j+1].week){
+                if((parseInt(sortedLectures[j].data["week"]) > parseInt(sortedLectures[j+1].data["week"]))){
                     var temp = sortedLectures[j];
                     sortedLectures[j] = sortedLectures[j+1];
                     sortedLectures[j+1] = temp;
+                    
                 }
             }
-            if(!swapped){
-                break;
-            }
+            
+        }
+        this.lectures = sortedLectures;
+        
+        for(var i = 0; i < this.lectures.length; i++){
+            this.elements["contents"].appendChild(this.lectures[i].elements["outer"]);
         }
         
     }
@@ -519,7 +511,7 @@ class module extends card{
         
         t.data["title"] = t.elements["titleHeadIn"].value;
         t.data["code"] = t.elements["code"].value;
-        t.data["desc"] = t.elements[""]
+        
 
         t.data["desc"] =  t.elements["extraInformationElements"]["desc"].value;;
         t.data["leader"] = t.elements["extraInformationElements"]["leader"].value;
@@ -540,7 +532,7 @@ class module extends card{
             }
         };
         xmlhttp.open("GET", "http://localhost/lecRev2/module/updateModuleInformation.php?"+
-                     "moduleID="+ t.data["modID"] +
+                     "moduleID="+ t.data["ID"] +
                      "&desc=" + t.data["desc"] +
                      "&leader=" + t.data["leader"] +
                      "&credits=" + t.data["credits"] +
@@ -576,7 +568,7 @@ class module extends card{
                 }
             }
         };
-        xmlhttp.open("POST", "http://localhost/lecRev2/lecture/getLectureByID.php?lectureID=" + t.lectID, true);//URL
+        xmlhttp.open("POST", "http://localhost/lecRev2/lecture/getLectureByID.php?lectureID=" + t.data["ID"], true);//URL
         xmlhttp.send();
         
     }

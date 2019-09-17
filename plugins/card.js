@@ -39,7 +39,7 @@ class card{
         
         if(this.expanded == 1){//Closing
             this.expanded = 0;
-this.maxHeight = this.calculateMaxHeight();
+            this.maxHeight = this.calculateMaxHeight();
         }else{
             this.expanded = 1;
             
@@ -90,8 +90,30 @@ this.maxHeight = this.calculateMaxHeight();
         return cur;
        
     }
+    /*
+    Returns index
+    */
+    searchArrayByObjectID(e, target){
+        var cur = e;
+        if(e.length < 0){
+            return;
+        }
+        if(e.length == 1){
+            return 0;
+        }
+        
+        for(var i =0; i < e.length; i++){
+
+            if(e.data["ID"] == target){
+                return i;
+            }
+        }
+        return false;
+       
+    }
     /* Requires bind */
     toggleEditable(override){
+        
         if(app.editingObject != null && this.title == app.editingObject.title){
             //save
             confirmThis("Are you sure?", "You will lose all current changes", "CANCEL", "OKAY",
@@ -121,7 +143,6 @@ this.maxHeight = this.calculateMaxHeight();
     
     stopEditingCurrentObject(save){
         var t = app.editingObject;
-        console.log(save);
         if(save){
             confirmThis("Saving", "Do you want to save?", "CANCEL", "OKAY",
                 function(){
