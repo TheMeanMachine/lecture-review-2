@@ -1,18 +1,7 @@
 
 <?php 
+include '../connection.php';
 
-$servername = "localhost";
-$username = "";
-$password = "";
-$dbname = "lecRev-working";
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-} 
 
 $flag = false;
 
@@ -35,7 +24,7 @@ if(!empty($_GET['module'])){
 //If passes validation
 if($flag === false){
 	
-	//sleep(2);
+	sleep(2);
 
 	$stmt = $conn->prepare("INSERT INTO lecture (moduleID)
 		VALUES (?)");

@@ -126,8 +126,8 @@ class card{
                 }.bind(this));
             return;
         }else{
-            console.log("toggleEditable: app is overriden or not editing");
-            console.log(app.editing);
+            //console.log("toggleEditable: app is overriden or not editing");
+            //console.log(app.editing);
             app.editing = true;
             this.editing = true;
             
