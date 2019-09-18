@@ -344,7 +344,7 @@ class myApp{
                 }
             }
         };
-        xmlhttp.open("POST", "http://localhost/lecRev2/module/getModules.php", true);//URL
+        xmlhttp.open("POST", this.server + "/module/getModules.php", true);//URL
         xmlhttp.send();
     }
     
@@ -357,7 +357,7 @@ class myApp{
     importPlugin(pluginName){
         //document.writeln("<script type='text/javascript' src='/plugins/"+pluginName+".js'></script>");
         try{
-            $.getScript('/plugins/'+pluginName+'.js');  
+            $.getScript('https://focus-hub.co.uk/lecture-review-2/plugins/'+pluginName+'.js');  
         }catch(e){
             this.loadPlugins();
         }
