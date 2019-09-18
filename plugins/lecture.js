@@ -94,7 +94,7 @@ class lecture extends card{
                     }
                 }
             };
-            xmlhttp.open("GET", "http://localhost/lecRev2/lecture/removeLecture.php?id=" + t.data["ID"], true);//URL
+            xmlhttp.open("GET", app.server + "/lecture/removeLecture.php?id=" + t.data["ID"], true);//URL
             xmlhttp.send();
 
 
@@ -292,7 +292,7 @@ class lecture extends card{
                 }
             }
         };
-        xmlhttp.open("GET", "http://localhost/lecRev2/lecture/updateLectureInformation.php?"+
+        xmlhttp.open("GET", app.server + "/lecture/updateLectureInformation.php?"+
                      "lectureID="+ t.data["ID"] +
                      "&complete=" + t.data["completed"] +
                      "&notes=" + t.data["notes"] +
@@ -341,7 +341,7 @@ class lecture extends card{
                 }
             }
         };
-        xmlhttp.open("POST", "http://localhost/lecRev2/lecture/getLectureByID.php?lectureID=" + t.data["ID"], true);//URL
+        xmlhttp.open("POST", app.server + "/lecture/getLectureByID.php?lectureID=" + t.data["ID"], true);//URL
         xmlhttp.send();
         
     }
@@ -368,7 +368,7 @@ class lecture extends card{
                 }
             }
         };
-        xmlhttp.open("GET", "http://localhost/lecRev2/lecture/updateLectureInformation.php?"+
+        xmlhttp.open("GET", app.server + "/lecture/updateLectureInformation.php?"+
                      "&week=" + t.data["week"] +
                      "&complete=" + t.data["completed"] +
                      "&title=" + t.data["title"] +
@@ -397,7 +397,7 @@ class lecture extends card{
             }
         };
 
-        xmlhttp.open("POST", "http://localhost/lecRev2/lecture/addLecture.php?module=" + t.parentModule.data["ID"], true);//URL
+        xmlhttp.open("POST", app.server + "/lecture/addLecture.php?module=" + t.parentModule.data["ID"], true);//URL
         xmlhttp.send();
     }
 

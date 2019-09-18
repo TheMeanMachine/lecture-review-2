@@ -144,7 +144,7 @@ class module extends card{
                 }
             }
         };
-        xmlhttp.open("POST", "http://localhost/lecRev2/lecture/getLecture.php?moduleID=" + t.data["ID"], true);//URL
+        xmlhttp.open("POST", app.server + "/lecture/getLecture.php?moduleID=" + t.data["ID"], true);//URL
         xmlhttp.send();
         
     }
@@ -564,7 +564,7 @@ class module extends card{
                 }
             }
         };
-        xmlhttp.open("GET", "http://localhost/lecRev2/module/updateModuleInformation.php?"+
+        xmlhttp.open("GET", app.server + "/module/updateModuleInformation.php?"+
                      "moduleID="+ t.data["ID"] +
                      "&desc=" + t.data["desc"] +
                      "&leader=" + t.data["leader"] +
@@ -601,7 +601,7 @@ class module extends card{
                 }
             }
         };
-        xmlhttp.open("POST", "http://localhost/lecRev2/lecture/getLectureByID.php?lectureID=" + t.data["ID"], true);//URL
+        xmlhttp.open("POST", app.server + "/lecture/getLectureByID.php?lectureID=" + t.data["ID"], true);//URL
         xmlhttp.send();
         
     }
@@ -629,7 +629,7 @@ class module extends card{
                     }
                 }
             };
-            xmlhttp.open("POST", "http://localhost/lecRev2/module/archiveModule.php?moduleID=" + t.data["ID"], true);//URL
+            xmlhttp.open("POST", app.server + "/module/archiveModule.php?moduleID=" + t.data["ID"], true);//URL
             xmlhttp.send();
         }.bind(this),
         function(){
@@ -658,7 +658,7 @@ class module extends card{
             }
         };
 
-        xmlhttp.open("POST", "http://localhost/lecRev2/module/addModule.php?" +
+        xmlhttp.open("POST", app.server + "/module/addModule.php?" +
         "year=" + t.data["year"] +
         "&semester=" + t.data["semester"], true);//URL
         xmlhttp.send();
