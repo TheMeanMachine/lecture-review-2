@@ -1,6 +1,7 @@
 class actionButton{
     constructor(text, icon, action, parent, color, hideAtStart){
         this.text = text;
+        this.title_grammarifed = this.text.charAt(0).toUpperCase() + this.text.substring(1);
         this.icon = icon;
         this.action = action;
         this.hideAtStart = hideAtStart;
@@ -17,19 +18,29 @@ class actionButton{
 
         //Event listens for click, runs the action
         this.button.addEventListener("click",this.action.bind(this));
-        this.button.addEventListener("mouseover",this.mouseIn);
-        this.button.addEventListener("mouseout",this.mouseOut);
+        this.button.addEventListener("mouseover",this.mouseIn.bind(this));
+        this.button.addEventListener("mouseout",this.mouseOut.bind(this));
         
         
         if(this.hideAtStart){
             this.hide();
         }
+        
+        this.timeoutId = 0;
+        
+        
+    }
+    
+    createToastForTitle(){
+        openToast(this.title_grammarifed);
     }
     
     draw(){
         this.button = document.createElement("div");
         this.button.setAttribute("class", "ccNBactionbut");
         this.button.setAttribute("name", this.text);
+        
+        this.button.setAttribute("title", this.title_grammarifed);
         
         this.iconEl = document.createElement("i");
         this.iconEl.setAttribute("class", "material-icons matIcon");
@@ -43,11 +54,21 @@ class actionButton{
     
     //For the hovers
     mouseIn(){
-        this.children[0].style.color = "#4384F4";
+        this.iconEl.style.color = "#4384F4";
+        var t = this;
+        //Long press
+        this.timeoutId = setTimeout(
+        function(){
+            t.createToastForTitle();
+        }.bind(this)
+        , 1000);
     }
 
     mouseOut(){
-        this.children[0].style.color = this.children[0].getAttribute("color");
+        this.iconEl.style.color = this.iconEl.getAttribute("color");
+        
+        //Long press
+        clearTimeout(this.timeoutId);
     }
 
     setIcon(){
@@ -98,6 +119,9 @@ class myApp{
         this.moduleActions = [];
         this.lectureActions = [];
         
+        this.year = 1;
+        this.semester = 1 ;
+        
         
         
         $(window).on('load', function() {//Needed to ensure plugins are loaded properly
@@ -114,7 +138,9 @@ class myApp{
     
     continueSetup(){
         try{
+            
             this.makeModuleList();//Generate the modules
+            this.updateCategory();
         }
         catch(e){//Makes sure plugins are loaded properly if problems occur
             if(e instanceof SyntaxError || e instanceof ReferenceError){
@@ -153,6 +179,10 @@ class myApp{
             this.parent.display();
         },true);
         
+        this.addModuleAction("archive", "archive", function(){
+            this.parent.archive();
+        },false);
+        
         this.addModuleAction("color", "color_lens",function(){
             this.parent.toggleColorChoice();
         },false);
@@ -184,6 +214,8 @@ class myApp{
             console.log("delete");
             this.parent.delete();
         },false);
+        
+        this.updateCategory();
         
     }
     /*
@@ -228,6 +260,7 @@ class myApp{
                 if(myArr.length > 0){//If data exists
 
                     for(var i = 0; i < myArr.length; i++){//Go through array
+                       
                         var id = myArr[i]['ID'];
                         var code = myArr[i]['code'];
                         var title = myArr[i]['title'];
@@ -242,8 +275,12 @@ class myApp{
              
                         var color = myArr[i]['color'];
                        
+                        var showOnStart;
+                        
+                        (year == t.year && sem == t.semester) ? showOnStart = true : showOnStart = false;
 
-                        var newMod = new module(id,
+                        if(myArr[i]["archived"] == 1){
+                            var newMod = new module(id,
                                                title,
                                                code,
                                                sem,
@@ -253,18 +290,25 @@ class myApp{
                                                credits,
                                                examPer,
                                                cwPer,
-                                               color);
+                                               color,
+                                                showOnStart);
+                            
+                            var flag = true;
+                            for(var j = 0; j < t.modules.year[year].sem[sem].length; j++){
+                                if(t.modules.year[year].sem[sem][j].data["ID"] == id){
+                                    flag = false;
+                                }
+                            }
+
+                            (flag) ? t.modules.year[year].sem[sem].push(newMod) : console.log("already exists");
+                        }
+                        
 
                         
                         
-                        var flag = true;
-                        for(var j = 0; j < t.modules["year"][year]["sem"][sem].length; j++){
-                            if(t.modules["year"][year]["sem"][sem][j].modID == id){
-                                flag = false;
-                            }
-                        }
                         
-                        (flag) ? t.modules["year"][year]["sem"][sem].push(newMod) : console.log("already exists");
+                        
+                        
                     }
                 }else{//Data doesn't exist
 
@@ -291,6 +335,47 @@ class myApp{
         
         
     
+    }
+    
+    updateCategory(){
+        var t = app;
+        console.log(t.modules);
+        var prevYear = t.year;
+        var prevSemester = t.semester;
+        
+        var yearSelect = document.getElementById("years");
+        var semesterSelect = document.getElementById("semester");
+        t.year = yearSelect.value;
+        t.semester = semesterSelect.value;
+        
+        var temp = t.modules.year[prevYear].sem[prevSemester];
+        console.log(temp);
+        for(var i = 0; i < temp.length;i++){
+            temp[i].removeElements();
+        }
+        
+        var temp = t.modules.year[t.year].sem[t.semester];
+
+        for(var i = 0; i < temp.length;i++){
+            temp[i].drawElements();
+            temp[i].display();
+        }
+    }
+    
+    createNewModule(){
+        var newMod = new module(null,
+                                               null,
+                                               null,
+                                               app.semester,
+                                               app.year,
+                                               null,
+                                               null,
+                                               null,
+                                               null,
+                                               null,
+                                               null,
+                               true);
+        app.modules.year[app.year].sem[app.semester].push(newMod);
     }
 }
 

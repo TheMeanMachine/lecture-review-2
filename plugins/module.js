@@ -1,5 +1,5 @@
 class module extends card{
-    constructor(ID,title,code,semester,year,desc,leader,credits,examPer,cwPer, color){
+    constructor(ID,title,code,semester,year,desc,leader,credits,examPer,cwPer, color, show){
         super();
         //details
         this.data = {};
@@ -32,18 +32,40 @@ class module extends card{
         //elements
         this.elements = {};
         this.actionButtons = [];
+        if(show){
+           //function calls
+            this.drawElements(); 
+        }
         
-        //function calls
-        this.drawElements();
-        this.display();
-        this.makeLectureList();
-        this.display();
+         if(ID == null || ID == "undefined"){
+            
+            this.makeNewModule();
+            //this.updateInformation();
+          
+         }
         
-        //Set listeners
-        this.elements["expand"].addEventListener("click",this.toggleContents.bind(this));
-        //this.elements["color"].addEventListener("click",this.toggleColorChoice.bind(this));
-        //this.elements["titleHeadIn"].addEventListener("change",this.setTitle.bind(this));
-        this.elements["info"].addEventListener("click",this.toggleExtraInformation.bind(this));
+        if(show){
+            this.display();
+            this.makeLectureList();
+        }
+        
+        
+        
+        
+        this.timeoutId = 0;
+        
+    }
+    
+    setupTitles(){
+        var temp = ["titleHeadIn"];
+        
+        for(var i = 0; i < temp.length; i++){
+            this.elements[temp[i]].parentNode.addEventListener("mouseover",function(){
+                this.mouseIn(temp, i-1);
+            }.bind(this));
+            this.elements[temp[i]].parentNode.addEventListener("mouseout",this.mouseOut.bind(this));
+        }
+        
     }
     
     calculateMaxHeight(){
@@ -149,7 +171,7 @@ class module extends card{
                                 <input class="ch_lTextInnerInput" type="text" name="code" value="" placeholder="Code" autocomplete="off" >
                             </div>
                             <div class="ch_mTextInner" name="titleHead">
-                                <input class="ch_mTextInnerIn" type="text" name="titleHeadIn" >
+                                <input class="ch_mTextInnerIn" type="text" placeholder="Title"name="titleHeadIn" >
                             </div>
 
                         </div>
@@ -318,6 +340,17 @@ class module extends card{
         }
         
         document.getElementById("pc").appendChild(this.elements["outer"]);
+        
+        
+        
+        //Set listeners
+        this.elements["expand"].addEventListener("click",this.toggleContents.bind(this));
+        //this.elements["color"].addEventListener("click",this.toggleColorChoice.bind(this));
+        //this.elements["titleHeadIn"].addEventListener("change",this.setTitle.bind(this));
+        this.elements["info"].addEventListener("click",this.toggleExtraInformation.bind(this));
+        
+        this.setupTitles()
+        this.makeLectureList();
     }
     
     display(){
@@ -355,6 +388,7 @@ class module extends card{
         this.elements["titleHeadIn"].setAttribute("title", this.data["title"]);
         
         this.elements["code"].value = this.data["code"];
+        this.elements["code"].setAttribute("title", this.data["code"]);
         
         var extraInformation = this.elements["extraInformationElements"];
         var keys = Object.keys(extraInformation);
@@ -460,8 +494,8 @@ class module extends card{
         var temp = this.actionButtons; 
         for(var i = 0; i < temp.length; i++){
             
-            this.elements[temp[i]].button.addEventListener("mouseover",this.mouseIn);
-            this.elements[temp[i]].button.addEventListener("mouseout",this.mouseOut);
+            this.elements[temp[i]].button.addEventListener("mouseover",this.mouseInButton);
+            this.elements[temp[i]].button.addEventListener("mouseout",this.mouseOutButton);
         }
         
     }
@@ -495,11 +529,11 @@ class module extends card{
     
     
     //For the hovers
-    mouseIn(){
+    mouseInButton(){
         this.children[0].style.color = "#4384F4";
     }
     
-    mouseOut(){
+    mouseOutButton(){
         this.children[0].style.color = this.children[0].getAttribute("color");
     }
     
@@ -508,7 +542,6 @@ class module extends card{
     
     updateInformation(){
         var t = this;
-        
         t.data["title"] = t.elements["titleHeadIn"].value;
         t.data["code"] = t.elements["code"].value;
         
@@ -571,6 +604,64 @@ class module extends card{
         xmlhttp.open("POST", "http://localhost/lecRev2/lecture/getLectureByID.php?lectureID=" + t.data["ID"], true);//URL
         xmlhttp.send();
         
+    }
+    
+    archive(){
+        
+        var t = this;
+        confirmThis("Are you sure?", "You're attempting to archive this module and you will need to contact an admin to restore this module", "CANCEL", "OKAY",
+        function(){
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+                if(this.readyState == 4 && this.status == 200) {
+                    //console.log(this.responseText);
+
+                    console.log(this.responseText);
+
+                    if( this.responseText.length > 0){//If data exists
+
+
+
+
+
+                    }else{//Data doesn't exist
+                        t.removeElements();
+                    }
+                }
+            };
+            xmlhttp.open("POST", "http://localhost/lecRev2/module/archiveModule.php?moduleID=" + t.data["ID"], true);//URL
+            xmlhttp.send();
+        }.bind(this),
+        function(){
+        }.bind(this));
+        
+        
+        
+    }
+    
+    makeNewModule(){
+        var t = this;
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if(this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+                if(this.responseText.length > 0){//If data exists
+                    t.data["ID"] = parseInt(this.responseText);
+                    console.log(t.data["ID"]);
+                    
+                    //t.getInformation();
+                    //t.continueSetup();
+                    
+                }else{//Data doesn't exist
+
+                }
+            }
+        };
+
+        xmlhttp.open("POST", "http://localhost/lecRev2/module/addModule.php?" +
+        "year=" + t.data["year"] +
+        "&semester=" + t.data["semester"], true);//URL
+        xmlhttp.send();
     }
     
 }

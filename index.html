@@ -46,13 +46,13 @@
                         <div class="pageNavbarInner">
                             <div class="pageNBactionOuter">
                                 <div class="pageNBactionInner " >
-                                    <select id="years" class="page_Select" name="years" onchange="updateModules(); setPersistence('year', this.value);">
+                                    <select id="years" class="page_Select" name="years" onchange="app.updateCategory();">
                                         <option value="1">Year 1</option>
                                         <option value="2">Year 2</option>
                                         <option value="3">Year 3</option>
                                     </select>
                                     
-                                    <select id="semester" class="page_Select" name="semester" onchange="updateModules(); setPersistence('semester', this.value);">
+                                    <select id="semester" class="page_Select" name="semester" onchange="app.updateCategory();">
                                         <option value="1">Semester 1</option>
                                         <option value="2">Semester 2</option>
                                     </select>
@@ -75,7 +75,7 @@
                                             tag_faces
                                         </i>
                                     </div>
-                                    <div class="pageNBactionbut" onclick="">
+                                    <div class="pageNBactionbut" onclick="app.createNewModule();">
                                         <i class="material-icons" id="centretext" style="" >
                                             add
                                         </i>

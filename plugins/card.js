@@ -28,6 +28,7 @@ class card{
                 "tertiary" : "#D1C4E9"
             }
         };
+        this.timeoutId = 0;
     }
     
     
@@ -141,6 +142,15 @@ class card{
         
     }
     
+    removeElements(){
+        
+        var outer = this.elements["outer"];
+        console.log(outer);
+        var parent = outer.parentNode;
+        parent.removeChild(outer);
+        
+    }
+    
     stopEditingCurrentObject(save){
         var t = app.editingObject;
         if(save){
@@ -225,5 +235,28 @@ class card{
         
     }
     
-    
+    mouseIn(list, index){
+        var el = list[index];
+        var t = this;
+        //Long press
+        t.timeoutId = setTimeout(
+        function(){
+            var title = t.elements[el].getAttribute("title");
+            if(title == null || title == "" || title == "undefined"){
+                  
+            }else{
+                openToast(title);
+            }
+            //console.log("2")
+            
+            
+        }
+        , 1000);
+    }
+
+    mouseOut(){
+        var t = this;
+        //Long press
+        clearTimeout(t.timeoutId);
+    }
 }

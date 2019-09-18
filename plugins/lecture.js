@@ -31,12 +31,6 @@ class lecture extends card{
             this.makeNewLecture();
             this.updateInformation();
           
-        }else{
-            
-            
-          
-            
-            
         }
         
         
@@ -48,6 +42,20 @@ class lecture extends card{
         this.elements["notes"].addEventListener("blur", this.getTimerStart.bind(this));
         this.elements["notes"].addEventListener("focus", this.getTimerStop.bind(this));
         this.elements["bookmark"].addEventListener("blur", this.updateInformation.bind(this));
+        
+        this.setupTitles();
+    }
+    
+    setupTitles(){
+        var temp = ["title"];
+        
+        for(var i = 0; i < temp.length; i++){
+            this.elements[temp[i]].parentNode.addEventListener("mouseover",function(){
+                this.mouseIn(temp, i-1);
+            }.bind(this));
+            this.elements[temp[i]].parentNode.addEventListener("mouseout",this.mouseOut.bind(this));
+        }
+        
     }
     
     continueSetup(){
@@ -96,14 +104,7 @@ class lecture extends card{
         });
     }
     
-    removeElements(){
-        
-        var outer = this.elements["outer"];
-        console.log(outer);
-        var parent = outer.parentNode;
-        parent.removeChild(outer);
-        
-    }
+    
     
     drawElements(){
         var cardTemplate = document.createElement('div');
