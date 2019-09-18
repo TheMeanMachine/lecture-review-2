@@ -299,7 +299,7 @@ class module extends card{
         //Add module action buttons
         for(var i = 0; i < app.moduleActions.length; i++){
             var moduleFoo = app.moduleActions[i];
-            this.elements[moduleFoo.text] = new actionButton(moduleFoo.text, moduleFoo.icon, moduleFoo.action, this, null, moduleFoo.hideAtStart);
+            this.elements[moduleFoo.text] = new actionButton(moduleFoo.text, moduleFoo.icon, moduleFoo.action, moduleFoo.hideAtStart, moduleFoo.cooldown, this, null);
             this.elements["actionBar"].appendChild(this.elements[moduleFoo.text].button);
             this.actionButtons.push(moduleFoo.text);
             

@@ -1,5 +1,5 @@
 class actionButton{
-    constructor(text, icon, action, parent, color, hideAtStart){
+    constructor(text, icon, action, hideAtStart, cooldown, parent, color){
         this.text = text;
         this.title_grammarifed = this.text.charAt(0).toUpperCase() + this.text.substring(1);
         this.icon = icon;
@@ -9,7 +9,7 @@ class actionButton{
         //Class the button belongs to
         this.parent = parent;
         
-        
+        this.cooldown = cooldown;
         //Outer div
         this.button;
         
@@ -17,7 +17,9 @@ class actionButton{
         this.draw();
 
         //Event listens for click, runs the action
-        this.button.addEventListener("click",this.action.bind(this));
+        this.button.addEventListener("click",function(){
+            this.processor(this.action);
+        }.bind(this));
         this.button.addEventListener("mouseover",this.mouseIn.bind(this));
         this.button.addEventListener("mouseout",this.mouseOut.bind(this));
         
@@ -28,7 +30,21 @@ class actionButton{
         
         this.timeoutId = 0;
         
-        
+        this.disabled = false;
+         
+    }
+    
+    processor(action){
+        if(this.disabled == false){
+            action.call(this);
+            this.disabled = true;
+            setTimeout(this.timeoutTime.bind(this), this.cooldown * 1000);  
+        }
+
+    }
+    
+    timeoutTime(){
+        this.disabled = false;
     }
     
     createToastForTitle(){
@@ -119,7 +135,7 @@ class myApp{
         this.moduleActions = [];
         this.lectureActions = [];
         
-        this.year = 1;
+        this.year = 3;
         this.semester = 1 ;
         
         
@@ -163,7 +179,7 @@ class myApp{
                                                              parent));
             parent.maxHeight = parent.calculateMaxHeight();
             parent.display();
-        },false);
+        },false, 2);
         
         this.addModuleAction("edit", "edit", function(){
             var parent = this.parent;
@@ -172,20 +188,26 @@ class myApp{
             }else{
                 parent.toggleEditable();
             }
-        },false);
+        },false, 0);
         
         this.addModuleAction("undo", "undo", function(){
-            this.parent.stopEditingCurrentObject();
-            this.parent.display();
-        },true);
+            confirmThis("Are you sure?", "You will lose all current changes", "CANCEL", "OKAY",
+            function(){
+                this.parent.stopEditingCurrentObject();
+                this.parent.display();
+            }.bind(this),
+            function(){
+                
+            }.bind(this));
+        },true, 0);
         
         this.addModuleAction("archive", "archive", function(){
             this.parent.archive();
-        },false);
+        },false, 1);
         
         this.addModuleAction("color", "color_lens",function(){
             this.parent.toggleColorChoice();
-        },false);
+        },false, 0);
         
         
         /*Lecture*/
@@ -201,19 +223,26 @@ class myApp{
             }
             
             
-        },false);
+        },false, 0);
         
         this.addLectureAction("undo", "undo", function(){
-            this.parent.stopEditingCurrentObject();
-            this.parent.display();
-        },true);
+            confirmThis("Are you sure?", "You will lose all current changes", "CANCEL", "OKAY",
+            function(){
+                this.parent.stopEditingCurrentObject();
+                this.parent.display();
+            }.bind(this),
+            function(){
+                
+            }.bind(this));
+            
+        },true, 0);
         
         
         
         this.addLectureAction("delete", "delete", function(){
             console.log("delete");
             this.parent.delete();
-        },false);
+        },false, 1);
         
         this.updateCategory();
         
@@ -226,8 +255,8 @@ class myApp{
     
     @return index of new button
     */
-    addModuleAction(text, icon, action, hide){
-        var temp = new actionButton(text, icon, action, null, null, hide);
+    addModuleAction(text, icon, action, hide, cooldown){
+        var temp = new actionButton(text, icon, action, hide, cooldown, null, null);
         this.moduleActions.push(temp);
         return this.moduleActions.length-1;
     }
@@ -240,8 +269,8 @@ class myApp{
     
     @return index of new button
     */
-    addLectureAction(text, icon, action, hide){
-        var temp = new actionButton(text, icon, action, null, null, hide);
+    addLectureAction(text, icon, action, hide, cooldown){
+        var temp = new actionButton(text, icon, action, hide, cooldown, null, null);
         this.lectureActions.push(temp);
         return this.lectureActions.length-1;
     }

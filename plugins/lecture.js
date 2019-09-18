@@ -181,10 +181,10 @@ class lecture extends card{
         
         var actionBar = this.elements["actionBar"];
         
-        //Add module action buttons
+        //Add lecture action buttons
         for(var i = 0; i < app.lectureActions.length; i++){
             var foo = app.lectureActions[i];
-            this.elements[foo.text] = new actionButton(foo.text, foo.icon, foo.action, this, null, foo.hideAtStart);
+            this.elements[foo.text] = new actionButton(foo.text, foo.icon, foo.action, foo.hideAtStart, foo.cooldown, this, null);
             this.elements["actionBar"].appendChild(this.elements[foo.text].button);
             this.actionButtons.push(foo.text);
             
