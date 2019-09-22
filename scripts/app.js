@@ -138,7 +138,7 @@ class myApp{
         this.year = 3;
         this.semester = 1 ;
         
-        this.server = "https://focus-hub.co.uk/lecture-review-2/php";
+        this.server = "https://lecturereview.co.uk/php";
         
         $(window).on('load', function() {//Needed to ensure plugins are loaded properly
             this.loadPlugins();//Load plugins

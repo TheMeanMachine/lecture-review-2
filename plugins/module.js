@@ -4,18 +4,35 @@ class module extends card{
         //details
         this.data = {};
         this.data["ID"] = ID;
-        this.data["title"] = title;
-        this.data["code"] = code;
-        this.data["semester"] = semester;
-        this.data["year"] = year;
-        this.data["desc"] = desc;
-        this.data["leader"] = leader;
-        this.data["credits"] = credits;
-        this.data["examPer"] = examPer;
-        this.data["cwPer"] = cwPer;
+        if(title == null || title == "undefined" || title == ""){
+            this.data["title"] = title;
+        }
+        if(code == null || code == "undefined" || code == ""){
+            this.data["code"] = code;
+        }
+        if(semester == null || semester == "undefined" || semester == ""){
+            this.data["semester"] = semester;
+        }
+        if(year == null || year == "undefined" || year == ""){
+            this.data["year"] = year;
+        }
+        if(desc == null || desc == "undefined" || desc == ""){
+            this.data["desc"] = desc;
+        }
+        if(leader == null || leader == "undefined" || leader == ""){
+            this.data["leader"] = leader;
+        }
+        if(credits == null || credits == "undefined" || credits == ""){
+            this.data["credits"] = credits;
+        }
+        if(examPer == null || examPer == "undefined" || examPer == ""){
+            this.data["examPer"] = examPer;
+        }
+        if(cwPer == null || cwPer == "undefined" || cwPer == ""){
+            this.data["cwPer"] = cwPer;
+        }
         
         this.editing = false;
-        
         
         //Lectures associated with this module
         this.lectures = [];
