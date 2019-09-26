@@ -3,35 +3,20 @@ class module extends card{
         super();
         //details
         this.data = {};
-        this.data["ID"] = ID;
-        if(title == null || title == "undefined" || title == ""){
-            this.data["title"] = title;
-        }
-        if(code == null || code == "undefined" || code == ""){
-            this.data["code"] = code;
-        }
-        if(semester == null || semester == "undefined" || semester == ""){
-            this.data["semester"] = semester;
-        }
-        if(year == null || year == "undefined" || year == ""){
-            this.data["year"] = year;
-        }
-        if(desc == null || desc == "undefined" || desc == ""){
-            this.data["desc"] = desc;
-        }
-        if(leader == null || leader == "undefined" || leader == ""){
-            this.data["leader"] = leader;
-        }
-        if(credits == null || credits == "undefined" || credits == ""){
-            this.data["credits"] = credits;
-        }
-        if(examPer == null || examPer == "undefined" || examPer == ""){
-            this.data["examPer"] = examPer;
-        }
-        if(cwPer == null || cwPer == "undefined" || cwPer == ""){
-            this.data["cwPer"] = cwPer;
-        }
         
+        console.log("Starting setting ID");
+        this.data["ID"] = ID;
+        console.log("Finished setting ID");
+        this.data["title"] = title || "";
+        this.data["code"] = code || "";
+        this.data["semester"] = semester || app.semester;
+        this.data["year"] = year || app.year;
+        this.data["desc"] = desc || "";
+        this.data["leader"] = leader || "";
+        this.data["credits"] = credits || 0;
+        this.data["examPer"] = examPer || 0;
+        this.data["cwPer"] = cwPer || 0;
+        console.log(this.data["title"]);
         this.editing = false;
         
         //Lectures associated with this module
@@ -129,7 +114,7 @@ class module extends card{
                 var myArr = JSON.parse(this.responseText);//Parses API json into key-value pairs
 
                 if( myArr != null && myArr.length > 0){//If data exists
-
+                    
                     for(var i = 0; i < myArr.length; i++){//Go through array
                         var lectureID = myArr[i]['lectureID'];
                         var week = myArr[i]['week'];
@@ -152,7 +137,7 @@ class module extends card{
                                                              bookmark,
                                                              lectureID,
                                                              t))
-                        : console.log("already exists");
+                        : console.log("Lecture already exists");
                         
                         this.lectLen += 1;
                     }

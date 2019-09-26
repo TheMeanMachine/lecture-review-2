@@ -5,12 +5,12 @@ class lecture extends card{
         this.data["ID"] = lectureID;
 //console.log(this.data["ID"]);
         //details
-        this.data["week"] = week;
-        this.data["title"] = title;
+        this.data["week"] = week || "";
+        this.data["title"] = title || "";
 
-        this.data["completed"] = completed;
-        this.data["notes"] = notes;
-        this.data["slideBookmark"] = slideBookmark;
+        this.data["completed"] = completed || 1;
+        this.data["notes"] = notes || "";
+        this.data["slideBookmark"] = slideBookmark || null;
         this.parentModule = module;
         
         //elements

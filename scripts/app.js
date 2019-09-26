@@ -287,10 +287,11 @@ class myApp{
                 var myArr = JSON.parse(this.responseText);//Parses API json into key-value pairs
                 //console.log(myArr);
                 if(myArr.length > 0){//If data exists
-
+                    console.log("Listing modules");
                     for(var i = 0; i < myArr.length; i++){//Go through array
                        
                         var id = myArr[i]['ID'];
+                        console.log(id);
                         var code = myArr[i]['code'];
                         var title = myArr[i]['title'];
                         var desc = myArr[i]['description'];
@@ -320,17 +321,21 @@ class myApp{
                                                examPer,
                                                cwPer,
                                                color,
-                                                showOnStart);
-                            
+                                               showOnStart);
+                            //console.log(title);
                             var flag = true;
                             for(var j = 0; j < t.modules.year[year].sem[sem].length; j++){
                                 if(t.modules.year[year].sem[sem][j].data["ID"] == id){
                                     flag = false;
+                                    console.log("this ae: " + id);
+                                    break;
                                 }
                             }
 
-                            (flag) ? t.modules.year[year].sem[sem].push(newMod) : console.log("already exists");
+                            (flag) ? t.modules.year[year].sem[sem].push(newMod) : console.log("Module already exists");
                         }
+                        
+                        
                         
 
                         
@@ -339,6 +344,7 @@ class myApp{
                         
                         
                     }
+                    console.log("Finished listing");
                 }else{//Data doesn't exist
 
                 }
