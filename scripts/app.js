@@ -355,9 +355,7 @@ class myApp{
     }
     
     loadPlugins(){
-        this.importPlugin("colorSelector");
-        this.importPlugin("lecture");
-        this.importPlugin("module");
+
     }
     
     importPlugin(pluginName){
